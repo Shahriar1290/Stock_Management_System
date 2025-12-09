@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane prefHeight="700" prefWidth="1200" style="-fx-background-color: #f4f6f9;" xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.stock_management_system.DashboardController">
+
+    <VBox spacing="12" prefWidth="180"
+          style="-fx-background-color: #2C3E50;"
+          AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0">
+
+        <padding>
+            <Insets top="20" left="15" bottom="20" right="15"/>
+        </padding>
+
+        <Button fx:id="dashboardButton" text="Dashboard"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="productsButton" text="Products"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="categoriesButton" text="Categories"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="ordersButton" text="Orders"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="suppliersButton" text="Suppliers"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="usersButton" text="Users"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="profileButton" text="Profile"
+                prefWidth="150"
+                style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 14;" />
+
+        <Button fx:id="logoutButton" text="Logout"
+                prefWidth="150"
+                style="-fx-background-color: #E74C3C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 5;" />
+    </VBox>
+
+    <VBox fx:id="mainPanel" spacing="25" style="-fx-padding: 25;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+
+        <Label style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Dashboard" />
+
+        <HBox spacing="20">
+
+            <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color: #0ea5e9; -fx-background-radius: 8;">
+                <Label style="-fx-text-fill: white;" text="Total Products" />
+            </VBox>
+
+            <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color: #22c55e; -fx-background-radius: 8;">
+                <Label style="-fx-text-fill: white;" text="Total Stock" />
+            </VBox>
+
+            <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color: #eab308; -fx-background-radius: 8;">
+                <Label style="-fx-text-fill: white;" text="Order Today" />
+            </VBox>
+
+            <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color: #a855f7; -fx-background-radius: 8;">
+                <Label style="-fx-text-fill: white;" text="Revenue" />
+            </VBox>
+        </HBox>
+
+        <HBox spacing="20">
+
+            <VBox prefHeight="150" prefWidth="300" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #dddddd;">
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Out of Stock Products" />
+            </VBox>
+
+            <VBox prefHeight="150" prefWidth="300" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #dddddd;">
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Highest Sale Product" />
+            </VBox>
+
+            <VBox prefHeight="150" prefWidth="300" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 8; -fx-border-color: #dddddd;">
+                <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Low Stock Products" />
+            </VBox>
+
+        </HBox>
+
+    </VBox>
+
+</AnchorPane>
