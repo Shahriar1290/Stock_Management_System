@@ -4,7 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import jdk.jfr.Category;
+import com.example.stock_management_system.models.Category;
 
 public class CategoriesController {
 
