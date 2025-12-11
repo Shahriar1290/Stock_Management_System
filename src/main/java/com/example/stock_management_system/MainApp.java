@@ -9,7 +9,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginPage.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Homepage.fxml"));
         Scene scene = new Scene(loader.load());
         stage.setTitle("Stock Management System");
         stage.setScene(scene);

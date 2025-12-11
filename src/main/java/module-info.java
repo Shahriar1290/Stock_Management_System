@@ -10,6 +10,7 @@ module com.example.stock_management_system {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires jdk.jfr;
 
     opens com.example.stock_management_system to javafx.fxml;
     exports com.example.stock_management_system;
