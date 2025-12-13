@@ -4,10 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
 public class DashboardController {
 
+    public AnchorPane contentPane;
     @FXML private Button dashboardButton;
     @FXML private Button productsButton;
     @FXML private Button categoriesButton;

@@ -1,24 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane style="-fx-background-color: #237580;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane style="-fx-background-color: #237580;"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.stock_management_system.ProductsController">
 
-    <Label layoutX="20" layoutY="20" style="-fx-font-size: 26px;" text="Products" />
+    <Label layoutX="20" layoutY="20"
+           style="-fx-font-size: 26px;"
+           text="Products" />
 
-    <Button layoutX="20" layoutY="70" onAction="#addProduct" text="Add Product" />
+    <!-- Input Fields -->
+    <TextField fx:id="txtName"
+               layoutX="20" layoutY="70"
+               promptText="Product Name" />
 
-    <TableView fx:id="productTable" layoutX="20" layoutY="120" prefHeight="500" prefWidth="800">
+    <TextField fx:id="txtCategory"
+               layoutX="200" layoutY="70"
+               promptText="Category" />
+
+    <TextField fx:id="txtStock"
+               layoutX="380" layoutY="70"
+               promptText="Stock" />
+
+    <Button layoutX="560" layoutY="70"
+            text="Add Product"
+            onAction="#addProduct" />
+
+    <TableView fx:id="productTable"
+               layoutX="20" layoutY="120"
+               prefHeight="500" prefWidth="800">
+
         <columns>
-            <TableColumn fx:id="colId" prefWidth="80" text="ID" />
-            <TableColumn fx:id="colName" prefWidth="200" text="Name" />
-            <TableColumn fx:id="colCategory" prefWidth="150" text="Category" />
-            <TableColumn fx:id="colStock" prefWidth="100" text="Stock" />
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colName" text="Name" prefWidth="200"/>
+            <TableColumn fx:id="colCategory" text="Category" prefWidth="150"/>
+            <TableColumn fx:id="colStock" text="Stock" prefWidth="100"/>
         </columns>
+
     </TableView>
+
 </AnchorPane>

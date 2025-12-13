@@ -41,7 +41,6 @@
                 AnchorPane.leftAnchor="220"
                 AnchorPane.rightAnchor="0">
 
-        <!-- EXISTING DASHBOARD CONTENT -->
         <VBox spacing="25" style="-fx-padding: 25;"
               AnchorPane.topAnchor="0"
               AnchorPane.leftAnchor="0"
