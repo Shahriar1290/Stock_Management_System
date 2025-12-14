@@ -1,65 +1,61 @@
 package com.example.stock_management_system.models;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class Product {
 
-    private final IntegerProperty id;
-    private final StringProperty name;
-    private final StringProperty category;
-    private final IntegerProperty stock;
+    private int id;
+    private String productName;
+    private String category;
+    private double price;
+    private int quantity;
 
-    public Product(int id, String name, String category, int stock) {
-        this.id = new SimpleIntegerProperty(id);
-        this.name = new SimpleStringProperty(name);
-        this.category = new SimpleStringProperty(category);
-        this.stock = new SimpleIntegerProperty(stock);
+    public Product(int id, String productName, String category, double price, int quantity) {
+        this.id = id;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
     }
 
-    public IntegerProperty idProperty() {
-        return id;
-    }
-
-    public StringProperty nameProperty() {
-        return name;
-    }
-
-    public StringProperty categoryProperty() {
-        return category;
-    }
-
-    public IntegerProperty stockProperty() {
-        return stock;
+    public Product(String productName, String category, double price, int quantity) {
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
     }
 
     public int getId() {
-        return id.get();
+        return id;
     }
 
-    public String getName() {
-        return name.get();
+    public String getProductName() {
+        return productName;
     }
 
     public String getCategory() {
-        return category.get();
+        return category;
     }
 
-    public int getStock() {
-        return stock.get();
+    public double getPrice() {
+        return price;
     }
 
-    public void setName(String name) {
-        this.name.set(name);
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public void setCategory(String category) {
-        this.category.set(category);
+        this.category = category;
     }
 
-    public void setStock(int stock) {
-        this.stock.set(stock);
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

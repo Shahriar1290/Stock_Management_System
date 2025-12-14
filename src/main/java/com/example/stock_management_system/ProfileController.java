@@ -49,4 +49,12 @@ public class ProfileController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public Button getBtnUpdateProfile() {
+        return btnUpdateProfile;
+    }
+
+    public void setBtnUpdateProfile(Button btnUpdateProfile) {
+        this.btnUpdateProfile = btnUpdateProfile;
+    }
 }

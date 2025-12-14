@@ -37,6 +37,7 @@
             <artifactId>javafx-web</artifactId>
             <version>21.0.6</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
@@ -129,6 +130,14 @@
                 <configuration>
                     <source>25</source>
                     <target>25</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>com.example.stock_management_system.MainApp</mainClass>
                 </configuration>
             </plugin>
             <plugin>

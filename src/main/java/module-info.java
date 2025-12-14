@@ -11,7 +11,11 @@ module com.example.stock_management_system {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires jdk.jfr;
+    requires java.sql;
 
     opens com.example.stock_management_system to javafx.fxml;
     exports com.example.stock_management_system;
+
+    opens com.example.stock_management_system.models to javafx.base;
+
 }

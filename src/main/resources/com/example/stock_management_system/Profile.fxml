@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<GridPane xmlns="http://javafx.com/javafx"
-          xmlns:fx="http://javafx.com/fxml"
-          fx:controller="com.example.stock_management_system.ProfileController"
-          hgap="10" vgap="10">
+<GridPane hgap="10" style="-fx-background-color: #84CEEB;" vgap="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.ProfileController">
     <padding>
-        <Insets top="20" left="20" right="20" bottom="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <children>
-        <Label text="Profile" style="-fx-font-size: 18; -fx-font-weight: bold;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Profile" GridPane.columnIndex="0" GridPane.rowIndex="0" />
 
-        <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtName" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtEmail" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-        <Label text="Password:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <PasswordField fx:id="txtPassword" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-        <Button text="Update" fx:id="btnUpdateProfile" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Button fx:id="btnUpdateProfile" text="Update" GridPane.columnIndex="1" GridPane.rowIndex="4" />
     </children>
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
 </GridPane>

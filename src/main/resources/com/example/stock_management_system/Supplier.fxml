@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" style="-fx-background-color: #84CEEB;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.SupplierController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+
+    <children>
+        <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Suppliers" />
+        <HBox spacing="10">
+            <children>
+                <Button fx:id="btnAddSupplier" text="Add" />
+                <Button fx:id="btnEditSupplier" text="Edit" />
+                <Button fx:id="btnDeleteSupplier" text="Delete" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tableSuppliers" style="-fx-background-color: #84CEEB;">
+            <columns>
+                <TableColumn fx:id="colSupplierId" prefWidth="50" text="ID" />
+                <TableColumn fx:id="colSupplierName" prefWidth="150" text="Name" />
+                <TableColumn fx:id="colSupplierContact" prefWidth="150" text="Contact" />
+            </columns>
+        </TableView>
+    </children>
+</VBox>

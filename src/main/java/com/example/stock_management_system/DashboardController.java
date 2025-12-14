@@ -21,10 +21,7 @@ public class DashboardController {
 
     @FXML private VBox mainPanel;
 
-    @FXML
-    private void initialize() {
-        openDashboard();
-    }
+
 
     @FXML
     private void openDashboard() {
@@ -33,7 +30,7 @@ public class DashboardController {
 
     @FXML
     private void openProducts() {
-        loadPage("Products.fxml");
+        loadPage("Product.fxml");
     }
 
     @FXML
@@ -48,7 +45,7 @@ public class DashboardController {
 
     @FXML
     private void openSuppliers() {
-        loadPage("Suppliers.fxml");
+        loadPage("Supplier.fxml");
     }
 
     @FXML
@@ -60,13 +57,12 @@ public class DashboardController {
     private void logout() {
         System.out.println("Logout clicked");
     }
-
     private void loadPage(String fxml) {
         try {
             mainPanel.getChildren().clear();
 
             FXMLLoader loader =
-                    new FXMLLoader(getClass().getResource("/fxml/" + fxml));
+                    new FXMLLoader(getClass().getResource("/com/example/stock_management_system/" + fxml));
             Node page = loader.load();
 
             mainPanel.getChildren().add(page);
