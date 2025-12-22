@@ -12,6 +12,7 @@ module com.example.stock_management_system {
     requires com.almasb.fxgl.all;
     requires jdk.jfr;
     requires java.sql;
+    requires java.management;
 
     opens com.example.stock_management_system to javafx.fxml;
     exports com.example.stock_management_system;

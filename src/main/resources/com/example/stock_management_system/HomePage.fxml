@@ -4,60 +4,162 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="700" prefWidth="1200" style="-fx-background-color: #84CEEB;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.DashboardController">
+<AnchorPane prefHeight="700" prefWidth="1200"
+            style="-fx-background-color: #84CEEB;"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.stock_management_system.DashboardController">
 
-    <VBox prefWidth="180" spacing="12" style="-fx-background-color: #2C3E50;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0">
+    <!-- ================= LEFT SIDEBAR ================= -->
+    <VBox prefWidth="180" spacing="12"
+          alignment="TOP_CENTER"
+          style="-fx-background-color: #2C3E50;"
+          AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0">
 
         <padding>
-            <Insets bottom="20" left="15" right="15" top="20" />
+            <Insets top="20" right="15" bottom="20" left="15"/>
         </padding>
 
-        <Button fx:id="dashboardButton" onAction="#openDashboard" prefWidth="150" text="Dashboard" />
-        <Button fx:id="productsButton" onAction="#openProducts" prefWidth="150" text="Products" />
-        <Button fx:id="categoriesButton" onAction="#openCategories" prefWidth="150" text="Categories" />
-        <Button fx:id="ordersButton" onAction="#openOrders" prefWidth="150" text="Orders" />
-        <Button fx:id="suppliersButton" onAction="#openSuppliers" prefWidth="150" text="Suppliers" />
-        <Button fx:id="usersButton" prefWidth="150" text="Users" />
-        <Button fx:id="profileButton" onAction="#openProfile" prefWidth="150" text="Profile" />
-        <Button fx:id="logoutButton" onAction="#logout" prefWidth="150" style="-fx-background-color:#E74C3C; -fx-text-fill:white;" text="Logout" />
+        <Button fx:id="dashboardButton" onAction="#openDashboard"
+                prefWidth="150" text="Dashboard"/>
+        <Button fx:id="productsButton" onAction="#openProducts"
+                prefWidth="150" text="Products"/>
+        <Button fx:id="categoriesButton" onAction="#openCategories"
+                prefWidth="150" text="Categories"/>
+        <Button fx:id="ordersButton" onAction="#openOrders"
+                prefWidth="150" text="Orders"/>
+        <Button fx:id="suppliersButton" onAction="#openSuppliers"
+                prefWidth="150" text="Suppliers"/>
+        <Button fx:id="usersButton"
+                prefWidth="150" text="Users"/>
+        <Button fx:id="profileButton" onAction="#openProfile"
+                prefWidth="150" text="Profile"/>
+
+        <Button fx:id="logoutButton" onAction="#logout"
+                prefWidth="150"
+                style="-fx-background-color:#E74C3C; -fx-text-fill:white;"
+                text="Logout"/>
     </VBox>
 
-    <AnchorPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="220" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+    <!-- ================= MAIN CONTENT ================= -->
+    <AnchorPane AnchorPane.topAnchor="0"
+                AnchorPane.bottomAnchor="0"
+                AnchorPane.leftAnchor="220"
+                AnchorPane.rightAnchor="0">
 
-        <VBox fx:id="mainPanel" spacing="25" style="-fx-padding: 25; -fx-background-color: #84CEEB;" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <VBox fx:id="mainPanel"
+              spacing="25"
+              alignment="TOP_LEFT"
+              style="-fx-padding:25; -fx-background-color:#84CEEB;"
+              AnchorPane.topAnchor="0"
+              AnchorPane.bottomAnchor="0"
+              AnchorPane.leftAnchor="0"
+              AnchorPane.rightAnchor="0">
 
-            <Label style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Dashboard" />
+            <Label text="Dashboard"
+                   style="-fx-font-size:28px; -fx-font-weight:bold;"/>
 
+            <!-- ===== SUMMARY CARDS ===== -->
             <HBox alignment="CENTER" spacing="20">
-                <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color:#0ea5e9; -fx-background-radius:8;">
-                    <Label style="-fx-text-fill:white;" text="Total Products" />
+
+                <VBox alignment="CENTER"
+                      prefHeight="80" prefWidth="200"
+                      style="-fx-background-color:#0ea5e9; -fx-background-radius:8;">
+
+                    <Label style="-fx-text-fill:white;" text="Total Products"/>
+
+                    <!-- 🔹 NUMBER LABEL -->
+                    <Label fx:id="totalProductsLabel"
+                           style="-fx-text-fill:white; -fx-font-size:20px; -fx-font-weight:bold;"
+                           text="0"/>
                 </VBox>
 
-                <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color:#22c55e; -fx-background-radius:8;">
-                    <Label style="-fx-text-fill:white;" text="Total Stock" />
+
+                <VBox alignment="CENTER" prefHeight="80" prefWidth="200"
+                      style="-fx-background-color:#22c55e; -fx-background-radius:8;">
+                    <Label style="-fx-text-fill:white;" text="Total Stock"/>
+                    <Label fx:id="totalStockLabel"
+                           text="0"
+                           style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:bold;"/>
                 </VBox>
 
-                <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color:#eab308; -fx-background-radius:8;">
-                    <Label style="-fx-text-fill:white;" text="Order Today" />
+                <!-- ORDERS TODAY -->
+                <VBox alignment="CENTER"
+                      prefHeight="80" prefWidth="200"
+                      style="-fx-background-color:#eab308; -fx-background-radius:8;">
+                    <Label style="-fx-text-fill:white;" text="Orders Today"/>
+                    <Label fx:id="ordersTodayLabel"
+                           text="0"
+                           style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:bold;"/>
                 </VBox>
 
-                <VBox alignment="CENTER" prefHeight="80" prefWidth="200" style="-fx-background-color: #a855f7; -fx-background-radius: 8;">
-                    <Label style="-fx-text-fill:white;" text="Revenue" />
+
+                <!-- REVENUE -->
+                <VBox alignment="CENTER" prefHeight="80" prefWidth="200"
+                      style="-fx-background-color:#a855f7; -fx-background-radius:8;">
+                    <Label style="-fx-text-fill:white;" text="Revenue"/>
+                    <Label fx:id="revenueLabel"
+                           text="0.0"
+                           style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:bold;"/>
                 </VBox>
+
             </HBox>
 
+            <!-- ===== ANALYTICS PANELS ===== -->
             <HBox alignment="CENTER" spacing="20">
-                <VBox alignment="CENTER" prefHeight="150" prefWidth="300" style="-fx-background-color:white; -fx-padding:20;                              -fx-background-radius:8; -fx-border-color:#dddddd;">
-                    <Label style="-fx-font-size:18px; -fx-font-weight:bold;" text="Out of Stock Products" />
+
+                <!-- 🔴 OUT OF STOCK -->
+                <VBox alignment="TOP_LEFT"
+                      prefHeight="170"
+                      prefWidth="300"
+                      style="-fx-background-color:white;
+                             -fx-padding:20;
+                             -fx-background-radius:8;
+                             -fx-border-color:#dddddd;">
+
+                    <Label text="Out of Stock Products"
+                           style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+                    <ListView fx:id="outOfStockList"
+                              prefHeight="110"/>
                 </VBox>
 
-                <VBox alignment="CENTER" prefHeight="150" prefWidth="300" style="-fx-background-color:white; -fx-padding:20;                              -fx-background-radius:8; -fx-border-color:#dddddd;">
-                    <Label style="-fx-font-size:18px; -fx-font-weight:bold;" text="Highest Sale Product" />
+                <!-- ⭐ HIGHEST SALE PRODUCT -->
+                <VBox alignment="TOP_LEFT"
+                      prefHeight="170"
+                      prefWidth="300"
+                      style="-fx-background-color:white;
+                             -fx-padding:20;
+                             -fx-background-radius:8;
+                             -fx-border-color:#dddddd;">
+
+                    <Label text="Highest Sale Product"
+                           style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+                    <Label fx:id="highestSaleLabel"
+                           text="No sales yet"
+                           style="-fx-font-size:16px; -fx-text-fill:#333333;" />
+
                 </VBox>
 
-                <VBox alignment="CENTER" prefHeight="150" prefWidth="300" style="-fx-background-color:white; -fx-padding:20;                              -fx-background-radius:8; -fx-border-color:#dddddd;">
-                    <Label style="-fx-font-size:18px; -fx-font-weight:bold;" text="Low Stock Products" />
+                <!-- ⚠️ LOW STOCK -->
+                <VBox alignment="TOP_LEFT"
+                      prefHeight="170"
+                      prefWidth="300"
+                      style="-fx-background-color:white;
+                             -fx-padding:20;
+                             -fx-background-radius:8;
+                             -fx-border-color:#dddddd;">
+
+                    <Label text="Low Stock Products"
+                           style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+                    <ListView fx:id="lowStockList"
+                              prefHeight="110"/>
                 </VBox>
+
             </HBox>
 
         </VBox>

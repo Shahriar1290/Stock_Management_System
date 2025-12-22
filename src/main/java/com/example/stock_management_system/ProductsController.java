@@ -27,7 +27,12 @@ public class ProductsController {
     public void initialize() {
         databaseManager = new DatabaseManager();
 
-        categoryComboBox.setItems(CategoryStore.getCategories());
+        categoryComboBox.setItems(
+                FXCollections.observableArrayList(
+                        databaseManager.getAllCategories()
+                )
+        );
+
         categoryComboBox.setCellFactory(cb -> new ListCell<>() {
             @Override
             protected void updateItem(Category item, boolean empty) {
@@ -35,7 +40,9 @@ public class ProductsController {
                 setText(empty || item == null ? "" : item.getName());
             }
         });
-        categoryComboBox.setButtonCell(categoryComboBox.getCellFactory().call(null));
+        categoryComboBox.setButtonCell(
+                categoryComboBox.getCellFactory().call(null)
+        );
 
         productNameColumn.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getProductName()));
@@ -75,7 +82,7 @@ public class ProductsController {
         try {
             Product product = new Product(
                     productNameField.getText(),
-                    categoryComboBox.getValue().getName(),
+                    categoryComboBox.getValue().getName(), // ✅ STRING
                     Double.parseDouble(priceField.getText()),
                     Integer.parseInt(quantityField.getText())
             );
@@ -134,7 +141,7 @@ public class ProductsController {
         priceField.setText(String.valueOf(selected.getPrice()));
         quantityField.setText(String.valueOf(selected.getQuantity()));
 
-        CategoryStore.getCategories().stream()
+        categoryComboBox.getItems().stream()
                 .filter(c -> c.getName().equals(selected.getCategory()))
                 .findFirst()
                 .ifPresent(categoryComboBox::setValue);
