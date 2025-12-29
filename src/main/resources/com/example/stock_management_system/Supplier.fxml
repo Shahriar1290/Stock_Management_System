@@ -4,27 +4,50 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" style="-fx-background-color: #84CEEB;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.SupplierController">
+<VBox spacing="12"
+      style="-fx-background-color: #84CEEB;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.stock_management_system.SupplierController">
+
     <padding>
-        <Insets bottom="10" left="10" right="10" top="10" />
+        <Insets top="15" right="15" bottom="15" left="15"/>
     </padding>
 
-    <children>
-        <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Suppliers" />
-        <HBox spacing="10">
-            <children>
-                <Button fx:id="btnAddSupplier" text="Add" />
-                <Button fx:id="btnEditSupplier" text="Edit" />
-                <Button fx:id="btnDeleteSupplier" text="Delete" />
-            </children>
-        </HBox>
+    <Label text="Suppliers"
+           style="-fx-font-size: 18; -fx-font-weight: bold;" />
 
-        <TableView fx:id="tableSuppliers" style="-fx-background-color: #84CEEB;">
-            <columns>
-                <TableColumn fx:id="colSupplierId" prefWidth="50" text="ID" />
-                <TableColumn fx:id="colSupplierName" prefWidth="150" text="Name" />
-                <TableColumn fx:id="colSupplierContact" prefWidth="150" text="Contact" />
-            </columns>
-        </TableView>
-    </children>
+    <GridPane hgap="10" vgap="10">
+        <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtSupplierId"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="1"
+                   editable="false"/>
+
+        <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtSupplierName"
+                   GridPane.rowIndex="1"
+                   GridPane.columnIndex="1"/>
+
+        <Label text="Contact:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtSupplierContact"
+                   GridPane.rowIndex="2"
+                   GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="10">
+        <Button text="Add" onAction="#addSupplier"/>
+        <Button text="Edit" onAction="#editSupplier"/>
+        <Button text="Delete" onAction="#deleteSupplier"/>
+        <Button text="Clear" onAction="#clearFields"/>
+    </HBox>
+
+    <TableView fx:id="tableSuppliers">
+        <columns>
+            <TableColumn fx:id="colSupplierId" text="ID" prefWidth="60"/>
+            <TableColumn fx:id="colSupplierName" text="Name" prefWidth="180"/>
+            <TableColumn fx:id="colSupplierContact" text="Contact" prefWidth="180"/>
+        </columns>
+    </TableView>
+
 </VBox>

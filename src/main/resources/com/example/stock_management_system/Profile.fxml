@@ -4,34 +4,86 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane hgap="10" style="-fx-background-color: #84CEEB;" vgap="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.ProfileController">
+<GridPane hgap="15"
+          vgap="12"
+          style="-fx-background-color: #84CEEB;"
+          xmlns="http://javafx.com/javafx/17"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.example.stock_management_system.ProfileController">
+
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
+        <Insets top="20" right="25" bottom="20" left="25"/>
     </padding>
 
-    <children>
-        <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="Profile" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <!-- Title -->
+    <Label text="User Profile"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="0"
+           GridPane.columnSpan="2"
+           style="-fx-font-size: 20; -fx-font-weight: bold;" />
 
-        <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <TextField fx:id="txtName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <!-- Username -->
+    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <TextField fx:id="txtUsername"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="1"
+               editable="false"/>
 
-        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <TextField fx:id="txtEmail" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <!-- Full Name -->
+    <Label text="Full Name:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <TextField fx:id="txtName"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="2"/>
 
-        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-        <PasswordField fx:id="txtPassword" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <!-- Email -->
+    <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+    <TextField fx:id="txtEmail"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="3"/>
 
-        <Button fx:id="btnUpdateProfile" text="Update" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-    </children>
-   <columnConstraints>
-      <ColumnConstraints />
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-   </rowConstraints>
+    <!-- Role -->
+    <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+    <TextField fx:id="txtRole"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="4"
+               editable="false"/>
+
+    <!-- Separator -->
+    <Separator GridPane.columnIndex="0"
+               GridPane.rowIndex="5"
+               GridPane.columnSpan="2"/>
+
+
+    <!-- Change Password Section -->
+    <Label text="Change Password"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="6"
+           GridPane.columnSpan="2"
+           style="-fx-font-size: 16; -fx-font-weight: bold;" />
+
+    <Label text="New Password:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+    <PasswordField fx:id="txtPassword"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="7"/>
+
+    <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+    <PasswordField fx:id="txtConfirmPassword"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="8"/>
+
+    <!-- Buttons -->
+    <HBox spacing="10"
+          alignment="CENTER_RIGHT"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="9">
+
+        <Button text="Cancel"
+                fx:id="btnCancel"
+                style="-fx-background-color: #cccccc;" />
+
+        <Button text="Update Profile"
+                fx:id="btnUpdateProfile"
+                style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+    </HBox>
+
 </GridPane>

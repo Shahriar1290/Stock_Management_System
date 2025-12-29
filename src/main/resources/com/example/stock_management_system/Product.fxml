@@ -14,12 +14,14 @@
     <TextField fx:id="priceField" layoutX="400" layoutY="70" prefWidth="140" promptText="Price" />
 
     <TextField fx:id="quantityField" layoutX="560" layoutY="70" prefWidth="140" promptText="Quantity" />
+    <TextField fx:id="searchField" layoutX="35.0" layoutY="108.0" onKeyReleased="#searchProduct" promptText="Search product" />
 
     <Button layoutX="720" layoutY="70" onAction="#handleAddProduct" text="Add" />
 
     <Button layoutX="780" layoutY="70" onAction="#handleUpdateProduct" text="Update" />
 
     <Button layoutX="860" layoutY="70" onAction="#handleDeleteProduct" text="Delete" />
+
 
     <TableView fx:id="productTable" layoutX="20" layoutY="130" onMouseClicked="#handleSelectProduct" prefHeight="430" prefWidth="910" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 

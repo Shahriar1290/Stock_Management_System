@@ -3,8 +3,12 @@ package com.example.stock_management_system;
 import com.example.stock_management_system.models.Product;
 import com.example.stock_management_system.models.Order;
 import com.example.stock_management_system.models.Category;
+import com.example.stock_management_system.models.User;
+import com.example.stock_management_system.models.Supplier;
+
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,28 +50,52 @@ public class DatabaseManager {
             );
             """;
 
+        String usersTable = """
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        role TEXT DEFAULT 'ADMIN',
+        password TEXT NOT NULL
+    );
+    """;
+
+        String suppliersTable = """
+    CREATE TABLE IF NOT EXISTS suppliers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        contact TEXT NOT NULL
+    );
+    """;
+
+
+
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement stmt = conn.createStatement()) {
 
             stmt.execute(productsTable);
             stmt.execute(ordersTable);
             stmt.execute(categoriesTable);
+            stmt.execute(usersTable);
 
             try {
                 stmt.execute("ALTER TABLE orders ADD COLUMN order_date TEXT");
-            } catch (SQLException ignored) {
-            }
+            } catch (SQLException ignored) {}
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
     public void addProduct(Product product) {
         String sql = """
             INSERT INTO products (product_name, category, price, quantity)
             VALUES (?, ?, ?, ?)
             """;
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -84,6 +112,7 @@ public class DatabaseManager {
 
     public List<Product> getAllProducts() {
         List<Product> list = new ArrayList<>();
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM products")) {
@@ -97,9 +126,43 @@ public class DatabaseManager {
                         rs.getInt("quantity")
                 ));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return list;
+    }
+
+    public List<Product> searchProducts(String keyword) {
+        List<Product> list = new ArrayList<>();
+
+        String sql = """
+            SELECT * FROM products
+            WHERE LOWER(product_name) LIKE LOWER(?)
+            ORDER BY product_name
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                list.add(new Product(
+                        rs.getInt("id"),
+                        rs.getString("product_name"),
+                        rs.getString("category"),
+                        rs.getDouble("price"),
+                        rs.getInt("quantity")
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
 
@@ -109,6 +172,7 @@ public class DatabaseManager {
             SET product_name=?, category=?, price=?, quantity=?
             WHERE id=?
             """;
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -128,8 +192,10 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement ps =
                      conn.prepareStatement("DELETE FROM products WHERE id=?")) {
+
             ps.setInt(1, id);
             ps.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -140,9 +206,11 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement ps =
                      conn.prepareStatement("INSERT INTO categories (name) VALUES (?)")) {
+
             ps.setString(1, name);
             ps.executeUpdate();
             return true;
+
         } catch (SQLException e) {
             return false;
         }
@@ -150,10 +218,10 @@ public class DatabaseManager {
 
     public static List<Category> getAllCategories() {
         List<Category> list = new ArrayList<>();
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement st = conn.createStatement();
-             ResultSet rs =
-                     st.executeQuery("SELECT * FROM categories ORDER BY id")) {
+             ResultSet rs = st.executeQuery("SELECT * FROM categories ORDER BY id")) {
 
             while (rs.next()) {
                 list.add(new Category(
@@ -161,9 +229,11 @@ public class DatabaseManager {
                         rs.getString("name")
                 ));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
     }
 
@@ -171,77 +241,40 @@ public class DatabaseManager {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              PreparedStatement ps =
                      conn.prepareStatement("DELETE FROM categories WHERE id=?")) {
+
             ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void addOrder(Order order) {
-        String sql = """
-        INSERT INTO orders (product_name, quantity, total_price, order_date)
-        VALUES (?, ?, ?, date('now'))
-        """;
-
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, order.getProductName());
-            ps.setInt(2, order.getQuantity());
-            ps.setDouble(3, order.getTotalPrice());
-            ps.executeUpdate();
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public List<Order> getAllOrders() {
         List<Order> list = new ArrayList<>();
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery("SELECT * FROM orders")) {
 
             while (rs.next()) {
+                LocalDate orderDate = LocalDate.parse(rs.getString("order_date"));
+
                 list.add(new Order(
                         rs.getInt("id"),
                         rs.getString("product_name"),
                         rs.getInt("quantity"),
-                        rs.getDouble("total_price")
+                        rs.getDouble("total_price"),
+                        orderDate
                 ));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
-    }
-
-    public double getTotalRevenue() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement st = conn.createStatement();
-             ResultSet rs =
-                     st.executeQuery("SELECT SUM(total_price) FROM orders")) {
-            if (rs.next()) return rs.getDouble(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0.0;
-    }
-
-    public int getOrdersTodayCount() {
-        try (Connection conn = DriverManager.getConnection(DB_URL);
-             Statement st = conn.createStatement();
-             ResultSet rs =
-                     st.executeQuery(
-                             "SELECT COUNT(*) FROM orders WHERE order_date = date('now')")) {
-
-            if (rs.next()) return rs.getInt(1);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 
     public boolean placeOrderAndReduceStock(String productName, int orderQty) {
@@ -299,6 +332,41 @@ public class DatabaseManager {
         }
     }
 
+    public double getTotalRevenue() {
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement st = conn.createStatement();
+             ResultSet rs =
+                     st.executeQuery("SELECT SUM(total_price) FROM orders")) {
+
+            if (rs.next()) return rs.getDouble(1);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0.0;
+    }
+
+    public int getOrdersTodayCount() {
+        String sql = """
+            SELECT COUNT(*)
+            FROM orders
+            WHERE DATE(order_date) = DATE('now')
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            if (rs.next()) return rs.getInt(1);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
     public String getHighestSaleProduct() {
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement st = conn.createStatement();
@@ -314,9 +382,170 @@ public class DatabaseManager {
             if (rs.next()) {
                 return rs.getString(1) + " (" + rs.getInt(2) + " sold)";
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return "No sales yet";
     }
+
+
+    public boolean validateUser(String username, String password) {
+
+        String sql = """
+            SELECT 1 FROM users
+            WHERE username = ? AND password = ?
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setString(2, PasswordUtil.hashPassword(password));
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public User getUserByUsername(String username) {
+
+        String sql = "SELECT * FROM users WHERE username = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new User(
+                        rs.getString("username"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("role")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    public void updateUserProfile(String username,
+                                  String name,
+                                  String email,
+                                  String hashedPassword) {
+
+        String sql;
+
+        if (hashedPassword == null) {
+            sql = """
+            UPDATE users
+            SET name = ?, email = ?
+            WHERE username = ?
+            """;
+        } else {
+            sql = """
+            UPDATE users
+            SET name = ?, email = ?, password = ?
+            WHERE username = ?
+            """;
+        }
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, email);
+
+            if (hashedPassword == null) {
+                ps.setString(3, username);
+            } else {
+                ps.setString(3, hashedPassword);
+                ps.setString(4, username);
+            }
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public List<Supplier> getAllSuppliers() {
+        List<Supplier> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM suppliers";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                list.add(new Supplier(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("contact")
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    public void addSupplier(String name, String contact) {
+        String sql = "INSERT INTO suppliers (name, contact) VALUES (?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, contact);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateSupplier(int id, String name, String contact) {
+        String sql = "UPDATE suppliers SET name=?, contact=? WHERE id=?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ps.setString(2, contact);
+            ps.setInt(3, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteSupplier(int id) {
+        String sql = "DELETE FROM suppliers WHERE id=?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

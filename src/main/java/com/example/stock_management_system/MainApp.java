@@ -9,12 +9,17 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/stock_management_system/HomePage.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/stock_management_system/LoginPage.fxml"));
         Scene scene = new Scene(loader.load());
         stage.setTitle("Stock Management System");
         stage.setScene(scene);
         stage.show();
+        System.out.println(
+                com.example.stock_management_system.PasswordUtil
+                        .hashPassword("2207005")
+        );
     }
+
 
     public static void main(String[] args) {
         launch(args);

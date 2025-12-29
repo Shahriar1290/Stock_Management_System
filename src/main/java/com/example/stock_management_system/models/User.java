@@ -1,53 +1,58 @@
 package com.example.stock_management_system.models;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class User {
 
-    private final StringProperty name;
-    private final StringProperty email;
-    private final StringProperty password;
+    private String username;
+    private String name;
+    private String email;
+    private String role;
+    private String password;
 
-    public User(String name, String email, String password) {
-        this.name = new SimpleStringProperty(name);
-        this.email = new SimpleStringProperty(email);
-        this.password = new SimpleStringProperty(password);
+    public User(String username, String name, String email, String role) {
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.role = role;
     }
 
-    public StringProperty nameProperty() {
-        return name;
+    public User(String username, String name, String email, String role, String password) {
+        this(username, name, email, role);
+        this.password = password;
     }
 
-    public StringProperty emailProperty() {
-        return email;
-    }
-
-    public StringProperty passwordProperty() {
-        return password;
+    public String getUsername() {
+        return username;
     }
 
     public String getName() {
-        return name.get();
+        return name;
     }
 
     public String getEmail() {
-        return email.get();
+        return email;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     public String getPassword() {
-        return password.get();
+        return password;
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name = name;
     }
 
     public void setEmail(String email) {
-        this.email.set(email);
+        this.email = email;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setPassword(String password) {
-        this.password.set(password);
+        this.password = password;
     }
 }

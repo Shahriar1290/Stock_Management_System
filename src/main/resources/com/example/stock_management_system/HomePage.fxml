@@ -10,7 +10,6 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.stock_management_system.DashboardController">
 
-    <!-- ================= LEFT SIDEBAR ================= -->
     <VBox prefWidth="180" spacing="12"
           alignment="TOP_CENTER"
           style="-fx-background-color: #2C3E50;"
@@ -32,18 +31,17 @@
                 prefWidth="150" text="Orders"/>
         <Button fx:id="suppliersButton" onAction="#openSuppliers"
                 prefWidth="150" text="Suppliers"/>
-        <Button fx:id="usersButton"
-                prefWidth="150" text="Users"/>
-        <Button fx:id="profileButton" onAction="#openProfile"
-                prefWidth="150" text="Profile"/>
+        <Button fx:id="profileButton"
+                text="Profile" prefWidth="150"
+                onAction="#openProfile"/>
 
-        <Button fx:id="logoutButton" onAction="#logout"
+
+        <Button fx:id="logoutButton" onAction="#handleLogout"
                 prefWidth="150"
                 style="-fx-background-color:#E74C3C; -fx-text-fill:white;"
                 text="Logout"/>
     </VBox>
 
-    <!-- ================= MAIN CONTENT ================= -->
     <AnchorPane AnchorPane.topAnchor="0"
                 AnchorPane.bottomAnchor="0"
                 AnchorPane.leftAnchor="220"
@@ -61,7 +59,6 @@
             <Label text="Dashboard"
                    style="-fx-font-size:28px; -fx-font-weight:bold;"/>
 
-            <!-- ===== SUMMARY CARDS ===== -->
             <HBox alignment="CENTER" spacing="20">
 
                 <VBox alignment="CENTER"
@@ -70,7 +67,6 @@
 
                     <Label style="-fx-text-fill:white;" text="Total Products"/>
 
-                    <!-- 🔹 NUMBER LABEL -->
                     <Label fx:id="totalProductsLabel"
                            style="-fx-text-fill:white; -fx-font-size:20px; -fx-font-weight:bold;"
                            text="0"/>
@@ -85,7 +81,6 @@
                            style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:bold;"/>
                 </VBox>
 
-                <!-- ORDERS TODAY -->
                 <VBox alignment="CENTER"
                       prefHeight="80" prefWidth="200"
                       style="-fx-background-color:#eab308; -fx-background-radius:8;">
@@ -95,11 +90,9 @@
                            style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:bold;"/>
                 </VBox>
 
-
-                <!-- REVENUE -->
                 <VBox alignment="CENTER" prefHeight="80" prefWidth="200"
                       style="-fx-background-color:#a855f7; -fx-background-radius:8;">
-                    <Label style="-fx-text-fill:white;" text="Revenue"/>
+                    <Label style="-fx-text-fill:white;" text="Total Revenue"/>
                     <Label fx:id="revenueLabel"
                            text="0.0"
                            style="-fx-text-fill:white; -fx-font-size:22px; -fx-font-weight:bold;"/>
@@ -107,10 +100,8 @@
 
             </HBox>
 
-            <!-- ===== ANALYTICS PANELS ===== -->
             <HBox alignment="CENTER" spacing="20">
 
-                <!-- 🔴 OUT OF STOCK -->
                 <VBox alignment="TOP_LEFT"
                       prefHeight="170"
                       prefWidth="300"
@@ -126,7 +117,6 @@
                               prefHeight="110"/>
                 </VBox>
 
-                <!-- ⭐ HIGHEST SALE PRODUCT -->
                 <VBox alignment="TOP_LEFT"
                       prefHeight="170"
                       prefWidth="300"
@@ -144,7 +134,6 @@
 
                 </VBox>
 
-                <!-- ⚠️ LOW STOCK -->
                 <VBox alignment="TOP_LEFT"
                       prefHeight="170"
                       prefWidth="300"

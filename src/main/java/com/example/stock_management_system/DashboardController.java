@@ -5,11 +5,13 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,7 @@ public class DashboardController {
     @FXML private Label totalProductsLabel;
     @FXML private Label totalStockLabel;
     @FXML private Label revenueLabel;
+    @FXML private Label ordersTodayLabel;
 
     private DatabaseManager databaseManager;
     private static final int LOW_STOCK_THRESHOLD = 3;
@@ -44,9 +47,7 @@ public class DashboardController {
     @FXML
     public void initialize() {
         databaseManager = new DatabaseManager();
-
         dashboardNodes = new ArrayList<>(mainPanel.getChildren());
-
         dashboardButton.setDisable(true);
         loadDashboardData();
     }
@@ -61,14 +62,17 @@ public class DashboardController {
     private void loadDashboardData() {
 
         List<Product> products = databaseManager.getAllProducts();
-        totalProductsLabel.setText(
-                String.valueOf(products.size())
-        );
+
+        totalProductsLabel.setText(String.valueOf(products.size()));
 
         int totalStock = products.stream()
                 .mapToInt(Product::getQuantity)
                 .sum();
         totalStockLabel.setText(String.valueOf(totalStock));
+
+        ordersTodayLabel.setText(
+                String.valueOf(databaseManager.getOrdersTodayCount())
+        );
 
         outOfStockList.setItems(
                 FXCollections.observableArrayList(
@@ -126,28 +130,45 @@ public class DashboardController {
 
     @FXML
     private void openProfile() {
+        System.out.println("Opening Profile Page...");
+
         dashboardButton.setDisable(false);
         loadPage("Profile.fxml");
     }
 
-    @FXML
-    private void logout() {
-        System.out.println("Logout clicked");
-    }
+
+
 
     private void loadPage(String fxml) {
         try {
             mainPanel.getChildren().clear();
-
             FXMLLoader loader =
                     new FXMLLoader(getClass().getResource(
                             "/com/example/stock_management_system/" + fxml));
-
             Node page = loader.load();
             mainPanel.getChildren().add(page);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void handleLogout() {
+        try {
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource(
+                            "/com/example/stock_management_system/LoginPage.fxml"
+                    ));
+
+            Scene loginScene = new Scene(loader.load());
+
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setTitle("Stock Management System - Login");
+            stage.setScene(loginScene);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 }

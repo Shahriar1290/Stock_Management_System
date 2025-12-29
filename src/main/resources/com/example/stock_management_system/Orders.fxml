@@ -15,19 +15,17 @@
 
     <Label fx:id="totalPriceLabel" layoutX="430" layoutY="70" style="-fx-text-fill: white; -fx-font-weight: bold;" text="0.0" />
 
-    <Button fx:id="addOrderButton"
-            layoutX="520"
-            layoutY="70"
-            onAction="#addOrder"
-            text="Add Order" />
+    <Button fx:id="addOrderButton" layoutX="520" layoutY="70" onAction="#addOrder" text="Add Order" />
 
 
-    <TableView fx:id="orderTable" layoutX="20" layoutY="130" prefHeight="380" prefWidth="760" style="-fx-background-color: #84CEEB;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+    <TableView fx:id="orderTable" layoutX="20" layoutY="130" prefHeight="430" prefWidth="800.0" style="-fx-background-color: #84CEEB;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
 
         <columns>
-            <TableColumn fx:id="productColumn" prefWidth="250" text="Product" />
+            <TableColumn fx:id="productColumn" prefWidth="220" text="Product" />
             <TableColumn fx:id="quantityColumn" prefWidth="200" text="Quantity" />
             <TableColumn fx:id="totalPriceColumn" prefWidth="200" text="Total Price" />
+            <TableColumn fx:id="dateColumn" prefWidth="200" text="Order Date" />
+
         </columns>
 
     </TableView>

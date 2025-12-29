@@ -1,23 +1,22 @@
 package com.example.stock_management_system.models;
 
+import java.time.LocalDate;
+
 public class Order {
 
     private int id;
     private String productName;
     private int quantity;
     private double totalPrice;
+    private LocalDate orderDate;   // ✅ MUST be LocalDate
 
-    public Order(int id, String productName, int quantity, double totalPrice) {
+    public Order(int id, String productName, int quantity,
+                 double totalPrice, LocalDate orderDate) {
         this.id = id;
         this.productName = productName;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
-    }
-
-    public Order(String productName, int quantity, double totalPrice) {
-        this.productName = productName;
-        this.quantity = quantity;
-        this.totalPrice = totalPrice;
+        this.orderDate = orderDate;
     }
 
     public int getId() {
@@ -34,5 +33,9 @@ public class Order {
 
     public double getTotalPrice() {
         return totalPrice;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
     }
 }

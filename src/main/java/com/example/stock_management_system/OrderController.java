@@ -34,6 +34,10 @@ public class OrderController {
     @FXML
     private TableColumn<Order, Double> totalPriceColumn;
 
+    @FXML
+    private TableColumn<Order, String> dateColumn;
+
+
     private DatabaseManager databaseManager;
 
     @FXML
@@ -53,6 +57,14 @@ public class OrderController {
 
         totalPriceColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getTotalPrice()));
+
+        dateColumn.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getOrderDate().toString()
+                )
+        );
+
+
 
         loadOrders();
     }

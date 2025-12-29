@@ -20,6 +20,8 @@ public class ProductsController {
     @FXML private TableColumn<Product, String> categoryColumn;
     @FXML private TableColumn<Product, Double> priceColumn;
     @FXML private TableColumn<Product, Integer> quantityColumn;
+    @FXML private TextField searchField;
+
 
     private DatabaseManager databaseManager;
 
@@ -58,6 +60,26 @@ public class ProductsController {
 
         loadProducts();
     }
+    @FXML
+    private void searchProduct() {
+
+        String keyword = searchField.getText();
+
+        if (keyword == null || keyword.isBlank()) {
+            productTable.setItems(
+                    FXCollections.observableArrayList(
+                            databaseManager.getAllProducts()
+                    )
+            );
+            return;
+        }
+
+        productTable.setItems(
+                FXCollections.observableArrayList(
+                        databaseManager.searchProducts(keyword)
+                )
+        );
+    }
 
     private void loadProducts() {
         productTable.setItems(
@@ -82,7 +104,7 @@ public class ProductsController {
         try {
             Product product = new Product(
                     productNameField.getText(),
-                    categoryComboBox.getValue().getName(), // ✅ STRING
+                    categoryComboBox.getValue().getName(),
                     Double.parseDouble(priceField.getText()),
                     Integer.parseInt(quantityField.getText())
             );
