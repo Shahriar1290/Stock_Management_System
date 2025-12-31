@@ -79,6 +79,8 @@ public class DatabaseManager {
             stmt.execute(ordersTable);
             stmt.execute(categoriesTable);
             stmt.execute(usersTable);
+            stmt.execute(suppliersTable);
+
 
             try {
                 stmt.execute("ALTER TABLE orders ADD COLUMN order_date TEXT");
@@ -333,10 +335,14 @@ public class DatabaseManager {
     }
 
     public double getTotalRevenue() {
+        String sql = """
+        SELECT SUM(quantity * total_price )
+        FROM orders
+        """;
+
         try (Connection conn = DriverManager.getConnection(DB_URL);
              Statement st = conn.createStatement();
-             ResultSet rs =
-                     st.executeQuery("SELECT SUM(total_price) FROM orders")) {
+             ResultSet rs = st.executeQuery(sql)) {
 
             if (rs.next()) return rs.getDouble(1);
 
@@ -346,6 +352,7 @@ public class DatabaseManager {
 
         return 0.0;
     }
+
 
     public int getOrdersTodayCount() {
         String sql = """

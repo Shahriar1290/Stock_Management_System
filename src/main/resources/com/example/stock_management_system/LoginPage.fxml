@@ -20,6 +20,6 @@
 
     <Label fx:id="errorLabel" layoutX="80" layoutY="175" style="-fx-text-fill: red;" />
 
-    <Button layoutX="160" layoutY="210" onAction="#handleLogin" prefWidth="80" style="-fx-background-color: gray;" text="Login" />
+    <Button layoutX="160" layoutY="210" onAction="#handleLogin" prefWidth="80" style="-fx-background-color: white;" text="Login" />
 
 </AnchorPane>

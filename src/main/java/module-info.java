@@ -13,6 +13,7 @@ module com.example.stock_management_system {
     requires jdk.jfr;
     requires java.sql;
     requires java.management;
+    requires java.desktop;
 
     opens com.example.stock_management_system to javafx.fxml;
     exports com.example.stock_management_system;
