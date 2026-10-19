@@ -1,89 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane hgap="15"
-          vgap="12"
-          style="-fx-background-color: #84CEEB;"
-          xmlns="http://javafx.com/javafx/17"
-          xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.example.stock_management_system.ProfileController">
+<VBox styleClass="page" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.stock_management_system.ProfileController">
 
-    <padding>
-        <Insets top="20" right="25" bottom="20" left="25"/>
-    </padding>
-
-    <!-- Title -->
-    <Label text="User Profile"
-           GridPane.columnIndex="0"
-           GridPane.rowIndex="0"
-           GridPane.columnSpan="2"
-           style="-fx-font-size: 20; -fx-font-weight: bold;" />
-
-    <!-- Username -->
-    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-    <TextField fx:id="txtUsername"
-               GridPane.columnIndex="1"
-               GridPane.rowIndex="1"
-               editable="false"/>
-
-    <!-- Full Name -->
-    <Label text="Full Name:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-    <TextField fx:id="txtName"
-               GridPane.columnIndex="1"
-               GridPane.rowIndex="2"/>
-
-    <!-- Email -->
-    <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-    <TextField fx:id="txtEmail"
-               GridPane.columnIndex="1"
-               GridPane.rowIndex="3"/>
-
-    <!-- Role -->
-    <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-    <TextField fx:id="txtRole"
-               GridPane.columnIndex="1"
-               GridPane.rowIndex="4"
-               editable="false"/>
-
-    <!-- Separator -->
-    <Separator GridPane.columnIndex="0"
-               GridPane.rowIndex="5"
-               GridPane.columnSpan="2"/>
-
-
-    <!-- Change Password Section -->
-    <Label text="Change Password"
-           GridPane.columnIndex="0"
-           GridPane.rowIndex="6"
-           GridPane.columnSpan="2"
-           style="-fx-font-size: 16; -fx-font-weight: bold;" />
-
-    <Label text="New Password:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-    <PasswordField fx:id="txtPassword"
-                   GridPane.columnIndex="1"
-                   GridPane.rowIndex="7"/>
-
-    <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-    <PasswordField fx:id="txtConfirmPassword"
-                   GridPane.columnIndex="1"
-                   GridPane.rowIndex="8"/>
-
-    <!-- Buttons -->
-    <HBox spacing="10"
-          alignment="CENTER_RIGHT"
-          GridPane.columnIndex="1"
-          GridPane.rowIndex="9">
-
-        <Button text="Cancel"
-                fx:id="btnCancel"
-                style="-fx-background-color: #cccccc;" />
-
-        <Button text="Update Profile"
-                fx:id="btnUpdateProfile"
-                style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+    <HBox styleClass="page-header">
+        <VBox>
+            <Label styleClass="page-heading" text="My Profile"/>
+            <Label styleClass="page-subtitle" text="Update your details and password."/>
+        </VBox>
     </HBox>
 
-</GridPane>
+    <HBox spacing="16">
+        <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="460">
+            <Label styleClass="card-title" text="Account details"/>
+            <HBox spacing="12">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label styleClass="field-label" text="USERNAME"/>
+                    <TextField fx:id="txtUsername" editable="false" disable="true"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label styleClass="field-label" text="ROLE"/>
+                    <TextField fx:id="txtRole" editable="false" disable="true"/>
+                </VBox>
+            </HBox>
+            <Label styleClass="field-label" text="FULL NAME"/>
+            <TextField fx:id="txtName"/>
+            <Label styleClass="field-label" text="EMAIL"/>
+            <TextField fx:id="txtEmail"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <padding><Insets top="6"/></padding>
+                <Button onAction="#cancelUpdate" styleClass="ghost" text="Reset"/>
+                <Button onAction="#updateProfile" styleClass="primary" text="Save details"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="460">
+            <Label styleClass="card-title" text="Change password"/>
+            <Label fx:id="passwordHint" styleClass="muted" wrapText="true"/>
+            <Label styleClass="field-label" text="CURRENT PASSWORD"/>
+            <PasswordField fx:id="txtCurrentPassword"/>
+            <Label styleClass="field-label" text="NEW PASSWORD"/>
+            <PasswordField fx:id="txtPassword"/>
+            <Label styleClass="field-label" text="CONFIRM NEW PASSWORD"/>
+            <PasswordField fx:id="txtConfirmPassword"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <padding><Insets top="6"/></padding>
+                <Button onAction="#changePassword" styleClass="primary" text="Update password"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

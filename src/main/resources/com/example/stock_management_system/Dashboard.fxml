@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.stock_management_system.DashboardController">
+
+    <VBox styleClass="page">
+        <HBox styleClass="page-header">
+            <VBox>
+                <Label fx:id="greetingLabel" styleClass="page-heading" text="Overview"/>
+                <Label styleClass="page-subtitle" text="Here is what is happening with your stock today."/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button onAction="#refresh" text="Refresh">
+                <graphic><Region styleClass="icon,small,icon-refresh"/></graphic>
+            </Button>
+        </HBox>
+
+        <HBox fx:id="statsRow" spacing="16"/>
+
+        <HBox spacing="16">
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="600">
+                <Label styleClass="card-title" text="Revenue - last 7 days"/>
+                <AreaChart fx:id="revenueChart" animated="false" legendVisible="false"
+                           createSymbols="true" prefHeight="260">
+                    <xAxis><CategoryAxis side="BOTTOM"/></xAxis>
+                    <yAxis><NumberAxis side="LEFT" forceZeroInRange="true"/></yAxis>
+                </AreaChart>
+            </VBox>
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="420">
+                <Label styleClass="card-title" text="Top selling products"/>
+                <BarChart fx:id="topProductsChart" animated="false" legendVisible="false"
+                          categoryGap="14" prefHeight="260">
+                    <xAxis><NumberAxis side="BOTTOM" minorTickVisible="false"/></xAxis>
+                    <yAxis><CategoryAxis side="LEFT"/></yAxis>
+                </BarChart>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="16">
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="420">
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label styleClass="card-title" text="Stock alerts"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="alertCountLabel" styleClass="muted"/>
+                </HBox>
+                <ListView fx:id="stockAlertList" prefHeight="230">
+                    <placeholder><Label styleClass="muted" text="All products are well stocked."/></placeholder>
+                </ListView>
+            </VBox>
+            <VBox styleClass="card" HBox.hgrow="ALWAYS" prefWidth="600">
+                <Label styleClass="card-title" text="Recent orders"/>
+                <TableView fx:id="recentOrdersTable" prefHeight="230">
+                    <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+                    <placeholder><Label styleClass="muted" text="No orders yet."/></placeholder>
+                    <columns>
+                        <TableColumn fx:id="recentProductColumn" text="Product" prefWidth="200"/>
+                        <TableColumn fx:id="recentQuantityColumn" text="Qty" prefWidth="70"/>
+                        <TableColumn fx:id="recentTotalColumn" text="Total" prefWidth="110"/>
+                        <TableColumn fx:id="recentDateColumn" text="Date" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>

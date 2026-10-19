@@ -1,53 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="12"
-      style="-fx-background-color: #84CEEB;"
-      xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
+<VBox styleClass="page" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.stock_management_system.SupplierController">
 
-    <padding>
-        <Insets top="15" right="15" bottom="15" left="15"/>
-    </padding>
-
-    <Label text="Suppliers"
-           style="-fx-font-size: 18; -fx-font-weight: bold;" />
-
-    <GridPane hgap="10" vgap="10">
-        <Label text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtSupplierId"
-                   GridPane.rowIndex="0"
-                   GridPane.columnIndex="1"
-                   editable="false"/>
-
-        <Label text="Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtSupplierName"
-                   GridPane.rowIndex="1"
-                   GridPane.columnIndex="1"/>
-
-        <Label text="Contact:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="txtSupplierContact"
-                   GridPane.rowIndex="2"
-                   GridPane.columnIndex="1"/>
-    </GridPane>
-
-    <HBox spacing="10">
-        <Button text="Add" onAction="#addSupplier"/>
-        <Button text="Edit" onAction="#editSupplier"/>
-        <Button text="Delete" onAction="#deleteSupplier"/>
-        <Button text="Clear" onAction="#clearFields"/>
+    <HBox styleClass="page-header">
+        <VBox>
+            <Label styleClass="page-heading" text="Suppliers"/>
+            <Label styleClass="page-subtitle" text="Keep track of who you buy from. Select a row to edit it."/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button onAction="#exportCsv" text="Export CSV">
+            <graphic><Region styleClass="icon,small,icon-download"/></graphic>
+        </Button>
     </HBox>
 
-    <TableView fx:id="tableSuppliers">
+    <VBox styleClass="card">
+        <Label fx:id="formTitle" styleClass="card-title" text="New supplier"/>
+        <HBox spacing="12">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label" text="NAME"/>
+                <TextField fx:id="txtSupplierName" promptText="Company or person"/>
+            </VBox>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label" text="CONTACT"/>
+                <TextField fx:id="txtSupplierContact" promptText="Phone or email"/>
+            </VBox>
+        </HBox>
+        <HBox spacing="10">
+            <padding><Insets top="4"/></padding>
+            <Button fx:id="addButton" onAction="#addSupplier" styleClass="primary" text="Add supplier"/>
+            <Button fx:id="saveButton" onAction="#editSupplier" text="Save changes"/>
+            <Button onAction="#clearFields" styleClass="ghost" text="Clear"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="deleteButton" onAction="#deleteSupplier" styleClass="danger" text="Delete"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <StackPane styleClass="search-box" alignment="CENTER_LEFT" prefWidth="300">
+            <TextField fx:id="searchField" styleClass="search-field" promptText="Search name or contact"/>
+            <Region styleClass="icon,small,icon-search" mouseTransparent="true">
+                <StackPane.margin><Insets left="11"/></StackPane.margin>
+            </Region>
+        </StackPane>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="summaryLabel" styleClass="summary-label"/>
+    </HBox>
+
+    <TableView fx:id="tableSuppliers" VBox.vgrow="ALWAYS">
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+        <placeholder><Label styleClass="muted" text="No suppliers yet. Add one above."/></placeholder>
         <columns>
-            <TableColumn fx:id="colSupplierId" text="ID" prefWidth="60"/>
-            <TableColumn fx:id="colSupplierName" text="Name" prefWidth="300"/>
-            <TableColumn fx:id="colSupplierContact" text="Contact" prefWidth="300"/>
+            <TableColumn fx:id="colSupplierId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colSupplierName" text="Name" prefWidth="320"/>
+            <TableColumn fx:id="colSupplierContact" text="Contact" prefWidth="320"/>
         </columns>
     </TableView>
-
 </VBox>

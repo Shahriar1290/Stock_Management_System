@@ -1,23 +1,10 @@
 module com.example.stock_management_system {
     requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.web;
-
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires net.synedra.validatorfx;
-    requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
-    requires com.almasb.fxgl.all;
-    requires jdk.jfr;
     requires java.sql;
-    requires java.management;
-    requires java.desktop;
+    requires java.prefs;
 
     opens com.example.stock_management_system to javafx.fxml;
     exports com.example.stock_management_system;
-
-    opens com.example.stock_management_system.models to javafx.base;
-
+    exports com.example.stock_management_system.models;
 }

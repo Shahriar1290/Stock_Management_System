@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.stock_management_system.MainLayoutController">
+
+    <left>
+        <VBox styleClass="sidebar">
+            <HBox styleClass="brand">
+                <ImageView fitHeight="34" fitWidth="34" preserveRatio="true">
+                    <Image url="@../../../images/Logo.png"/>
+                </ImageView>
+                <VBox>
+                    <Label styleClass="brand-title" text="Stock Manager"/>
+                    <Label styleClass="brand-subtitle" text="Inventory management"/>
+                </VBox>
+            </HBox>
+
+            <Label styleClass="nav-section" text="OVERVIEW"/>
+            <ToggleButton fx:id="dashboardNav" onAction="#openDashboard" styleClass="nav-button"
+                          text="Dashboard" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-dashboard"/></graphic>
+            </ToggleButton>
+
+            <Label styleClass="nav-section" text="INVENTORY"/>
+            <ToggleButton fx:id="productsNav" onAction="#openProducts" styleClass="nav-button"
+                          text="Products" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-box"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="categoriesNav" onAction="#openCategories" styleClass="nav-button"
+                          text="Categories" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-category"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="ordersNav" onAction="#openOrders" styleClass="nav-button"
+                          text="Orders" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-cart"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="suppliersNav" onAction="#openSuppliers" styleClass="nav-button"
+                          text="Suppliers" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-truck"/></graphic>
+            </ToggleButton>
+
+            <Label styleClass="nav-section" text="ACCOUNT"/>
+            <ToggleButton fx:id="profileNav" onAction="#openProfile" styleClass="nav-button"
+                          text="My Profile" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-user"/></graphic>
+            </ToggleButton>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button fx:id="themeButton" onAction="#toggleTheme" styleClass="nav-button"
+                    text="Dark mode" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-moon"/></graphic>
+            </Button>
+            <Button onAction="#handleLogout" styleClass="nav-button,logout"
+                    text="Sign out" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-logout"/></graphic>
+            </Button>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox>
+            <HBox styleClass="topbar">
+                <Label fx:id="dateLabel" styleClass="topbar-date"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="user-chip">
+                    <StackPane styleClass="avatar">
+                        <Label fx:id="avatarLabel" styleClass="avatar-text"/>
+                    </StackPane>
+                    <VBox>
+                        <Label fx:id="userNameLabel" styleClass="user-name"/>
+                        <Label fx:id="userRoleLabel" styleClass="user-role"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+            <StackPane fx:id="contentArea" styleClass="content-area" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+</BorderPane>

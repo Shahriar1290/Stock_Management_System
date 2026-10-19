@@ -1,61 +1,38 @@
 package com.example.stock_management_system.models;
 
-public class Product {
+public record Product(int id,
+                      String productName,
+                      String category,
+                      double price,
+                      int quantity,
+                      int reorderLevel) {
 
-    private int id;
-    private String productName;
-    private String category;
-    private double price;
-    private int quantity;
+    public enum Status {
+        IN_STOCK("In stock"), LOW_STOCK("Low stock"), OUT_OF_STOCK("Out of stock");
 
-    public Product(int id, String productName, String category, double price, int quantity) {
-        this.id = id;
-        this.productName = productName;
-        this.category = category;
-        this.price = price;
-        this.quantity = quantity;
+        private final String label;
+
+        Status(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
     }
 
-    public Product(String productName, String category, double price, int quantity) {
-        this.productName = productName;
-        this.category = category;
-        this.price = price;
-        this.quantity = quantity;
+    public Product(String productName, String category, double price, int quantity, int reorderLevel) {
+        this(0, productName, category, price, quantity, reorderLevel);
     }
 
-    public int getId() {
-        return id;
+    public double stockValue() {
+        return price * quantity;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public Status status() {
+        if (quantity == 0) return Status.OUT_OF_STOCK;
+        if (quantity <= reorderLevel) return Status.LOW_STOCK;
+        return Status.IN_STOCK;
     }
 }

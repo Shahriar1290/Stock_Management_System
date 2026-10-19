@@ -1,32 +1,23 @@
 package com.example.stock_management_system;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import javafx.scene.image.Image;
-
+import java.util.Objects;
 
 public class MainApp extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/stock_management_system/LoginPage.fxml"));
-        Scene scene = new Scene(loader.load());
-        stage.setTitle("Stock Management System");
-        stage.getIcons().add(
-                new Image(getClass().getResourceAsStream("/images/Logo.png"))
-        );
-
-        stage.setScene(scene);
+    public void start(Stage stage) {
+        stage.getIcons().add(new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream("/images/Logo.png"))));
+        stage.setMinWidth(1000);
+        stage.setMinHeight(640);
+        Navigator.init(stage);
+        Navigator.showLogin();
         stage.show();
-        System.out.println(
-                com.example.stock_management_system.PasswordUtil
-                        .hashPassword("2207005")
-        );
     }
-
 
     public static void main(String[] args) {
         launch(args);

@@ -1,27 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane style="-fx-background-color: #84CEEB;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.CategoriesController">
+<VBox styleClass="page" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.stock_management_system.CategoriesController">
 
-    <Label layoutX="20" layoutY="20" style="-fx-font-size: 26px;" text="Categories" />
-
-    <HBox layoutX="20" layoutY="70" spacing="10">
-        <children>
-            <TextField fx:id="txtCategoryName" promptText="Enter category name" />
-            <Button onAction="#addCategory" text="Add" />
-            <Button onAction="#deleteCategory" text="Delete Selected" />
-        </children>
+    <HBox styleClass="page-header">
+        <VBox>
+            <Label styleClass="page-heading" text="Categories"/>
+            <Label styleClass="page-subtitle" text="Group your products. Renaming a category updates all of its products."/>
+        </VBox>
     </HBox>
 
-    <TableView fx:id="categoryTable" layoutX="20" layoutY="120" prefHeight="500" prefWidth="663.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+    <VBox styleClass="card">
+        <Label styleClass="card-title" text="Add a category"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <TextField fx:id="txtCategoryName" onAction="#addCategory" promptText="Category name" prefWidth="320"/>
+            <Button onAction="#addCategory" styleClass="primary" text="Add category"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="renameButton" onAction="#renameCategory" text="Rename..."/>
+            <Button fx:id="deleteButton" onAction="#deleteCategory" styleClass="danger" text="Delete"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <StackPane styleClass="search-box" alignment="CENTER_LEFT" prefWidth="300">
+            <TextField fx:id="searchField" styleClass="search-field" promptText="Search categories"/>
+            <Region styleClass="icon,small,icon-search" mouseTransparent="true">
+                <StackPane.margin><Insets left="11"/></StackPane.margin>
+            </Region>
+        </StackPane>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="summaryLabel" styleClass="summary-label"/>
+    </HBox>
+
+    <TableView fx:id="categoryTable" VBox.vgrow="ALWAYS">
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+        <placeholder><Label styleClass="muted" text="No categories yet. Add one above."/></placeholder>
         <columns>
-            <TableColumn fx:id="colId" prefWidth="80" text="ID" />
-            <TableColumn fx:id="colName" prefWidth="300" text="Category Name" />
+            <TableColumn fx:id="colId" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="colName" text="Category" prefWidth="320"/>
+            <TableColumn fx:id="colProducts" text="Products" prefWidth="140" styleClass="numeric"/>
         </columns>
-      <columnResizePolicy>
-         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-      </columnResizePolicy>
     </TableView>
-</AnchorPane>
+</VBox>

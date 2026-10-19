@@ -1,185 +1,254 @@
 package com.example.stock_management_system;
 
-import com.example.stock_management_system.models.Product;
 import com.example.stock_management_system.models.Category;
+import com.example.stock_management_system.models.Product;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
+
+import java.util.List;
+import java.util.Locale;
 
 public class ProductsController {
 
+    private static final String ALL_CATEGORIES = "All categories";
+
+    @FXML private Label formTitle;
     @FXML private TextField productNameField;
+    @FXML private ComboBox<Category> categoryComboBox;
     @FXML private TextField priceField;
     @FXML private TextField quantityField;
-    @FXML private ComboBox<Category> categoryComboBox;
+    @FXML private TextField reorderField;
+    @FXML private Button addButton;
+    @FXML private Button updateButton;
+    @FXML private Button restockButton;
+    @FXML private Button deleteButton;
+
+    @FXML private TextField searchField;
+    @FXML private ComboBox<String> categoryFilter;
+    @FXML private CheckBox lowStockOnly;
+    @FXML private Label summaryLabel;
 
     @FXML private TableView<Product> productTable;
     @FXML private TableColumn<Product, String> productNameColumn;
     @FXML private TableColumn<Product, String> categoryColumn;
     @FXML private TableColumn<Product, Double> priceColumn;
     @FXML private TableColumn<Product, Integer> quantityColumn;
-    @FXML private TextField searchField;
+    @FXML private TableColumn<Product, Integer> reorderColumn;
+    @FXML private TableColumn<Product, Double> valueColumn;
+    @FXML private TableColumn<Product, Product.Status> statusColumn;
 
-
-    private DatabaseManager databaseManager;
+    private final DatabaseManager db = DatabaseManager.getInstance();
+    private final ObservableList<Product> products = FXCollections.observableArrayList();
+    private final FilteredList<Product> filtered = new FilteredList<>(products);
 
     @FXML
     public void initialize() {
-        databaseManager = new DatabaseManager();
+        productNameColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().productName()));
+        categoryColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().category()));
+        priceColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().price()));
+        priceColumn.setCellFactory(Formats.cells(Formats::money));
+        quantityColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().quantity()));
+        reorderColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().reorderLevel()));
+        valueColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().stockValue()));
+        valueColumn.setCellFactory(Formats.cells(Formats::money));
+        statusColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().status()));
+        statusColumn.setCellFactory(column -> new StatusCell());
 
-        categoryComboBox.setItems(
-                FXCollections.observableArrayList(
-                        databaseManager.getAllCategories()
-                )
-        );
+        SortedList<Product> sorted = new SortedList<>(filtered);
+        sorted.comparatorProperty().bind(productTable.comparatorProperty());
+        productTable.setItems(sorted);
+        productTable.getSelectionModel().selectedItemProperty()
+                .addListener((obs, old, selected) -> showSelection(selected));
 
-        categoryComboBox.setCellFactory(cb -> new ListCell<>() {
-            @Override
-            protected void updateItem(Category item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? "" : item.getName());
-            }
-        });
-        categoryComboBox.setButtonCell(
-                categoryComboBox.getCellFactory().call(null)
-        );
+        searchField.textProperty().addListener((obs, o, n) -> applyFilter());
+        categoryFilter.valueProperty().addListener((obs, o, n) -> applyFilter());
+        lowStockOnly.selectedProperty().addListener((obs, o, n) -> applyFilter());
 
-        productNameColumn.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getProductName()));
-
-        categoryColumn.setCellValueFactory(cell ->
-                new SimpleStringProperty(cell.getValue().getCategory()));
-
-        priceColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().getPrice()));
-
-        quantityColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().getQuantity()));
-
-        loadProducts();
+        reload();
+        showSelection(null);
     }
-    @FXML
-    private void searchProduct() {
 
-        String keyword = searchField.getText();
+    private void reload() {
+        List<Category> categories = db.getAllCategories();
+        categoryComboBox.setItems(FXCollections.observableArrayList(categories));
 
-        if (keyword == null || keyword.isBlank()) {
-            productTable.setItems(
-                    FXCollections.observableArrayList(
-                            databaseManager.getAllProducts()
-                    )
-            );
-            return;
+        String currentFilter = categoryFilter.getValue();
+        ObservableList<String> filterItems = FXCollections.observableArrayList(ALL_CATEGORIES);
+        categories.forEach(c -> filterItems.add(c.name()));
+        categoryFilter.setItems(filterItems);
+        categoryFilter.setValue(filterItems.contains(currentFilter) ? currentFilter : ALL_CATEGORIES);
+
+        products.setAll(db.getAllProducts());
+        applyFilter();
+    }
+
+    private void applyFilter() {
+        String keyword = searchField.getText() == null ? "" : searchField.getText().trim().toLowerCase(Locale.ROOT);
+        String category = categoryFilter.getValue();
+        boolean lowOnly = lowStockOnly.isSelected();
+
+        filtered.setPredicate(p ->
+                (keyword.isEmpty() || p.productName().toLowerCase(Locale.ROOT).contains(keyword))
+                        && (category == null || ALL_CATEGORIES.equals(category) || category.equals(p.category()))
+                        && (!lowOnly || p.status() != Product.Status.IN_STOCK));
+
+        double value = filtered.stream().mapToDouble(Product::stockValue).sum();
+        summaryLabel.setText(filtered.size() + " of " + products.size() + " products  •  value " + Formats.money(value));
+    }
+
+    private void showSelection(Product selected) {
+        boolean hasSelection = selected != null;
+        updateButton.setDisable(!hasSelection);
+        restockButton.setDisable(!hasSelection);
+        deleteButton.setDisable(!hasSelection);
+        addButton.setDisable(hasSelection);
+        formTitle.setText(hasSelection ? "Edit product" : "New product");
+        if (!hasSelection) return;
+
+        productNameField.setText(selected.productName());
+        priceField.setText(String.valueOf(selected.price()));
+        quantityField.setText(String.valueOf(selected.quantity()));
+        reorderField.setText(String.valueOf(selected.reorderLevel()));
+        categoryComboBox.getItems().stream()
+                .filter(c -> c.name().equals(selected.category()))
+                .findFirst()
+                .ifPresentOrElse(categoryComboBox::setValue, () -> categoryComboBox.setValue(null));
+    }
+
+    /** Validates the form; returns the product it describes (with the given id) or null. */
+    private Product readForm(int id) {
+        String name = productNameField.getText().trim();
+        Category category = categoryComboBox.getValue();
+        if (name.isEmpty() || category == null
+                || priceField.getText().isBlank() || quantityField.getText().isBlank()) {
+            Dialogs.warn("Missing information", "Please enter a name, category, price and quantity.");
+            return null;
         }
 
-        productTable.setItems(
-                FXCollections.observableArrayList(
-                        databaseManager.searchProducts(keyword)
-                )
-        );
-    }
+        double price = Formats.parseAmount(priceField.getText());
+        int quantity = Formats.parseCount(quantityField.getText());
+        int reorder = reorderField.getText().isBlank()
+                ? DatabaseManager.DEFAULT_REORDER_LEVEL
+                : Formats.parseCount(reorderField.getText());
+        if (price < 0 || quantity < 0 || reorder < 0) {
+            Dialogs.warn("Invalid number",
+                    "Price must be a positive number, and quantity and reorder level whole numbers of 0 or more.");
+            return null;
+        }
 
-    private void loadProducts() {
-        productTable.setItems(
-                FXCollections.observableArrayList(
-                        databaseManager.getAllProducts()
-                )
-        );
+        boolean duplicate = products.stream()
+                .anyMatch(p -> p.id() != id && p.productName().equalsIgnoreCase(name));
+        if (duplicate) {
+            Dialogs.warn("Duplicate product", "A product called \"" + name + "\" already exists.");
+            return null;
+        }
+        return new Product(id, name, category.name(), price, quantity, reorder);
     }
 
     @FXML
     private void handleAddProduct() {
-
-        if (productNameField.getText().isEmpty()
-                || priceField.getText().isEmpty()
-                || quantityField.getText().isEmpty()
-                || categoryComboBox.getValue() == null) {
-
-            showAlert("Validation Error", "Please fill all fields");
+        Product product = readForm(0);
+        if (product == null) return;
+        if (!db.addProduct(product)) {
+            Dialogs.error("Error", "The product could not be saved.");
             return;
         }
-
-        try {
-            Product product = new Product(
-                    productNameField.getText(),
-                    categoryComboBox.getValue().getName(),
-                    Double.parseDouble(priceField.getText()),
-                    Integer.parseInt(quantityField.getText())
-            );
-
-            databaseManager.addProduct(product);
-            loadProducts();
-            clearFields();
-
-        } catch (NumberFormatException e) {
-            showAlert("Invalid Input", "Price and Quantity must be numbers");
-        }
+        clearForm();
+        reload();
     }
 
     @FXML
     private void handleUpdateProduct() {
         Product selected = productTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert("No Selection", "Select a product to update");
+        if (selected == null) return;
+        Product product = readForm(selected.id());
+        if (product == null) return;
+        if (!db.updateProduct(product)) {
+            Dialogs.error("Error", "The product could not be updated.");
             return;
         }
+        reload();
+        selectById(product.id());
+    }
 
-        try {
-            selected.setProductName(productNameField.getText());
-            selected.setCategory(categoryComboBox.getValue().getName());
-            selected.setPrice(Double.parseDouble(priceField.getText()));
-            selected.setQuantity(Integer.parseInt(quantityField.getText()));
-
-            databaseManager.updateProduct(selected);
-            loadProducts();
-            clearFields();
-
-        } catch (NumberFormatException e) {
-            showAlert("Invalid Input", "Price and Quantity must be numbers");
-        }
+    @FXML
+    private void handleRestock() {
+        Product selected = productTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+        Dialogs.prompt("Restock " + selected.productName(),
+                        "Units received (currently " + selected.quantity() + " in stock):", "")
+                .ifPresent(text -> {
+                    int amount = Formats.parseCount(text);
+                    if (amount <= 0) {
+                        Dialogs.warn("Invalid quantity", "Enter a whole number greater than 0.");
+                        return;
+                    }
+                    db.restockProduct(selected.id(), amount);
+                    reload();
+                    selectById(selected.id());
+                });
     }
 
     @FXML
     private void handleDeleteProduct() {
         Product selected = productTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert("No Selection", "Select a product to delete");
+        if (selected == null) return;
+        if (!Dialogs.confirm("Delete product",
+                "Delete \"" + selected.productName() + "\"? Its order history is kept.")) {
             return;
         }
-
-        databaseManager.deleteProduct(selected.getId());
-        loadProducts();
-        clearFields();
+        db.deleteProduct(selected.id());
+        clearForm();
+        reload();
     }
 
     @FXML
-    private void handleSelectProduct() {
-        Product selected = productTable.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-
-        productNameField.setText(selected.getProductName());
-        priceField.setText(String.valueOf(selected.getPrice()));
-        quantityField.setText(String.valueOf(selected.getQuantity()));
-
-        categoryComboBox.getItems().stream()
-                .filter(c -> c.getName().equals(selected.getCategory()))
-                .findFirst()
-                .ifPresent(categoryComboBox::setValue);
-    }
-
-    private void clearFields() {
+    private void clearForm() {
+        productTable.getSelectionModel().clearSelection();
         productNameField.clear();
         priceField.clear();
         quantityField.clear();
-        categoryComboBox.getSelectionModel().clearSelection();
+        reorderField.clear();
+        categoryComboBox.setValue(null);
     }
 
-    private void showAlert(String title, String msg) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setContentText(msg);
-        alert.showAndWait();
+    @FXML
+    private void exportCsv() {
+        CsvExporter.export(productTable, "products.csv");
+    }
+
+    private void selectById(int id) {
+        productTable.getItems().stream()
+                .filter(p -> p.id() == id)
+                .findFirst()
+                .ifPresent(p -> productTable.getSelectionModel().select(p));
+    }
+
+    /** Renders a product's stock status as a coloured pill. */
+    private static final class StatusCell extends TableCell<Product, Product.Status> {
+        private final Label pill = new Label();
+
+        StatusCell() {
+            getStyleClass().add("status-cell");
+            pill.getStyleClass().add("pill");
+        }
+
+        @Override
+        protected void updateItem(Product.Status status, boolean empty) {
+            super.updateItem(status, empty);
+            if (empty || status == null) {
+                setGraphic(null);
+                return;
+            }
+            pill.setText(status.toString());
+            pill.getStyleClass().removeAll("in-stock", "low-stock", "out-of-stock");
+            pill.getStyleClass().add(status.name().toLowerCase(Locale.ROOT).replace('_', '-'));
+            setGraphic(pill);
+        }
     }
 }

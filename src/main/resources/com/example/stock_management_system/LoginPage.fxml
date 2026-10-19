@@ -1,25 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="540.0" prefWidth="960.0" style="-fx-background-color: #84CEEB;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.LoginController">
+<HBox styleClass="login-root" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.stock_management_system.LoginController">
 
-    <Label layoutX="80" layoutY="30" text="Stock Management System">
-        <font>
-            <Font size="18" />
-        </font>
-    </Label>
+    <VBox styleClass="login-hero" HBox.hgrow="ALWAYS" prefWidth="480">
+        <ImageView fitHeight="64" fitWidth="64" preserveRatio="true">
+            <Image url="@../../../images/Logo.png"/>
+        </ImageView>
+        <Label styleClass="hero-title" text="Stock Management System"/>
+        <Label styleClass="hero-text"
+               text="Track products, categories, suppliers and orders in one place, and know what to restock before you run out."/>
+        <VBox spacing="8">
+            <padding><Insets top="10"/></padding>
+            <Label styleClass="hero-point" text="✓  Live dashboard with sales and revenue trends"/>
+            <Label styleClass="hero-point" text="✓  Low-stock alerts with per-product reorder levels"/>
+            <Label styleClass="hero-point" text="✓  Search, filter and export any list to CSV"/>
+        </VBox>
+    </VBox>
 
-    <Label layoutX="80" layoutY="110" text="Username:" />
-    <TextField fx:id="usernameField" layoutX="160" layoutY="105" prefWidth="180" AnchorPane.rightAnchor="600.0" />
+    <StackPane HBox.hgrow="ALWAYS" prefWidth="520">
+        <padding><Insets top="32" right="32" bottom="32" left="32"/></padding>
 
-    <Label layoutX="80" layoutY="150" text="Password:" />
-    <PasswordField fx:id="passwordField" layoutX="160" layoutY="145" prefWidth="180" AnchorPane.rightAnchor="600.0" />
+        <VBox styleClass="login-card" maxHeight="-Infinity">
+            <Label fx:id="titleLabel" styleClass="login-title" text="Welcome back"/>
+            <Label fx:id="subtitleLabel" styleClass="muted" wrapText="true"
+                   text="Sign in to manage your inventory."/>
 
-    <Label fx:id="errorLabel" layoutX="80" layoutY="175" style="-fx-text-fill: red;" />
+            <VBox fx:id="setupFields" spacing="10" managed="false" visible="false">
+                <padding><Insets top="6"/></padding>
+                <Label styleClass="field-label" text="FULL NAME"/>
+                <TextField fx:id="nameField" promptText="Jane Doe"/>
+                <Label styleClass="field-label" text="EMAIL"/>
+                <TextField fx:id="emailField" promptText="jane@example.com"/>
+            </VBox>
 
-    <Button layoutX="160" layoutY="210" onAction="#handleLogin" prefWidth="80" style="-fx-background-color: white;" text="Login" />
+            <Label styleClass="field-label" text="USERNAME">
+                <padding><Insets top="6"/></padding>
+            </Label>
+            <TextField fx:id="usernameField" promptText="Enter your username"/>
 
-</AnchorPane>
+            <Label styleClass="field-label" text="PASSWORD"/>
+            <PasswordField fx:id="passwordField" promptText="Enter your password"/>
+
+            <VBox fx:id="confirmFields" spacing="10" managed="false" visible="false">
+                <Label styleClass="field-label" text="CONFIRM PASSWORD"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Repeat the password"/>
+            </VBox>
+
+            <Label fx:id="errorLabel" styleClass="error-label" managed="false" visible="false"/>
+
+            <Button fx:id="submitButton" defaultButton="true" maxWidth="Infinity" onAction="#handleSubmit"
+                    styleClass="primary" text="Sign in">
+                <VBox.margin><Insets top="8"/></VBox.margin>
+            </Button>
+        </VBox>
+    </StackPane>
+</HBox>

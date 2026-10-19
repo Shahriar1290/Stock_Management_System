@@ -1,21 +1,30 @@
 package com.example.stock_management_system;
 
-public class Session {
+import com.example.stock_management_system.models.User;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
-    private static String loggedInUser;
+/** Holds the signed-in user; observable so the UI can react to profile changes. */
+public final class Session {
+
+    private static final ObjectProperty<User> currentUser = new SimpleObjectProperty<>();
 
     private Session() {
     }
 
-    public static void setUser(String username) {
-        loggedInUser = username;
+    public static ObjectProperty<User> userProperty() {
+        return currentUser;
     }
 
-    public static String getUser() {
-        return loggedInUser;
+    public static void setUser(User user) {
+        currentUser.set(user);
+    }
+
+    public static User getUser() {
+        return currentUser.get();
     }
 
     public static void clear() {
-        loggedInUser = null;
+        currentUser.set(null);
     }
 }

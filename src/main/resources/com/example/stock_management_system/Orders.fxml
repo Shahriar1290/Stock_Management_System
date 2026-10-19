@@ -1,33 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="550" prefWidth="800" style="-fx-background-color: #84CEEB;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stock_management_system.OrderController">
+<VBox styleClass="page" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.stock_management_system.OrderController">
 
-    <Label layoutX="20" layoutY="20" style="-fx-font-size: 26px; -fx-text-fill: white;" text="Orders" />
+    <HBox styleClass="page-header">
+        <VBox>
+            <Label styleClass="page-heading" text="Orders"/>
+            <Label styleClass="page-subtitle" text="Record sales. Stock is deducted automatically and restored if an order is cancelled."/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button onAction="#exportCsv" text="Export CSV">
+            <graphic><Region styleClass="icon,small,icon-download"/></graphic>
+        </Button>
+    </HBox>
 
-    <ComboBox fx:id="productComboBox" layoutX="20" layoutY="70" prefWidth="200" promptText="Select Product" />
+    <VBox styleClass="card">
+        <Label styleClass="card-title" text="New order"/>
+        <HBox spacing="12" alignment="BOTTOM_LEFT">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label" text="PRODUCT"/>
+                <ComboBox fx:id="productComboBox" maxWidth="Infinity" promptText="Select a product in stock"/>
+            </VBox>
+            <VBox spacing="6" prefWidth="140">
+                <Label styleClass="field-label" text="QUANTITY"/>
+                <TextField fx:id="quantityField" promptText="1"/>
+            </VBox>
+            <VBox spacing="2" prefWidth="200">
+                <Label styleClass="field-label" text="ORDER TOTAL"/>
+                <Label fx:id="totalPriceLabel" styleClass="total-value" text="0.00"/>
+            </VBox>
+            <Button fx:id="addOrderButton" defaultButton="true" onAction="#addOrder" styleClass="primary" text="Place order">
+                <HBox.margin><Insets bottom="2"/></HBox.margin>
+            </Button>
+        </HBox>
+        <Label fx:id="stockHintLabel" styleClass="muted"/>
+    </VBox>
 
-    <TextField fx:id="quantityField" layoutX="240" layoutY="70" onKeyReleased="#calculateTotal" prefWidth="120" promptText="Quantity" />
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <StackPane styleClass="search-box" alignment="CENTER_LEFT" prefWidth="260">
+            <TextField fx:id="searchField" styleClass="search-field" promptText="Search by product"/>
+            <Region styleClass="icon,small,icon-search" mouseTransparent="true">
+                <StackPane.margin><Insets left="11"/></StackPane.margin>
+            </Region>
+        </StackPane>
+        <Label styleClass="muted" text="From"/>
+        <DatePicker fx:id="fromDate" prefWidth="140" promptText="Any"/>
+        <Label styleClass="muted" text="To"/>
+        <DatePicker fx:id="toDate" prefWidth="140" promptText="Any"/>
+        <Button onAction="#clearFilters" styleClass="ghost" text="Reset"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="summaryLabel" styleClass="summary-label"/>
+        <Button fx:id="cancelOrderButton" onAction="#cancelOrder" styleClass="danger" text="Cancel order"/>
+    </HBox>
 
-    <Label layoutX="380" layoutY="70" style="-fx-text-fill: white;" text="Total:" />
-
-    <Label fx:id="totalPriceLabel" layoutX="430" layoutY="70" style="-fx-text-fill: white; -fx-font-weight: bold;" text="0.0" />
-
-    <Button fx:id="addOrderButton" layoutX="520" layoutY="70" onAction="#addOrder" text="Add Order" />
-
-
-    <TableView fx:id="orderTable" layoutX="20" layoutY="130" prefHeight="430" prefWidth="800.0" style="-fx-background-color: #84CEEB;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-
+    <TableView fx:id="orderTable" VBox.vgrow="ALWAYS">
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+        <placeholder><Label styleClass="muted" text="No orders match your filters."/></placeholder>
         <columns>
-            <TableColumn fx:id="productColumn" prefWidth="220" text="Product" />
-            <TableColumn fx:id="quantityColumn" prefWidth="200" text="Quantity" />
-            <TableColumn fx:id="totalPriceColumn" prefWidth="200" text="Total Price" />
-            <TableColumn fx:id="dateColumn" prefWidth="200" text="Order Date" />
-
+            <TableColumn fx:id="idColumn" text="Order #" prefWidth="90"/>
+            <TableColumn fx:id="productColumn" text="Product" prefWidth="260"/>
+            <TableColumn fx:id="quantityColumn" text="Qty" prefWidth="90" styleClass="numeric"/>
+            <TableColumn fx:id="totalPriceColumn" text="Total" prefWidth="140" styleClass="numeric"/>
+            <TableColumn fx:id="dateColumn" text="Date" prefWidth="160"/>
         </columns>
-
     </TableView>
-
-</AnchorPane>
+</VBox>
