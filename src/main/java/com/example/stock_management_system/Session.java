@@ -24,6 +24,11 @@ public final class Session {
         return currentUser.get();
     }
 
+    public static boolean isAdmin() {
+        User user = currentUser.get();
+        return user != null && user.isAdmin();
+    }
+
     public static void clear() {
         currentUser.set(null);
     }

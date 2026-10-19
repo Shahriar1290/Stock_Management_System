@@ -47,11 +47,11 @@
                 <StackPane.margin><Insets left="11"/></StackPane.margin>
             </Region>
         </StackPane>
-        <Label styleClass="muted" text="From"/>
+        <Label styleClass="muted" text="From" minWidth="-Infinity"/>
         <DatePicker fx:id="fromDate" prefWidth="140" promptText="Any"/>
-        <Label styleClass="muted" text="To"/>
+        <Label styleClass="muted" text="To" minWidth="-Infinity"/>
         <DatePicker fx:id="toDate" prefWidth="140" promptText="Any"/>
-        <Button onAction="#clearFilters" styleClass="ghost" text="Reset"/>
+        <Button onAction="#clearFilters" styleClass="ghost" text="Reset" minWidth="-Infinity"/>
         <Region HBox.hgrow="ALWAYS"/>
         <Label fx:id="summaryLabel" styleClass="summary-label"/>
         <Button fx:id="cancelOrderButton" onAction="#cancelOrder" styleClass="danger" text="Cancel order"/>

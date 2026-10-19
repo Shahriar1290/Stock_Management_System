@@ -72,6 +72,10 @@ public class OrderController {
         fromDate.valueProperty().addListener((obs, o, n) -> applyFilter());
         toDate.valueProperty().addListener((obs, o, n) -> applyFilter());
 
+        // Only admins can cancel orders.
+        cancelOrderButton.setVisible(Session.isAdmin());
+        cancelOrderButton.setManaged(Session.isAdmin());
+
         reload();
     }
 

@@ -3,11 +3,18 @@ package com.example.stock_management_system;
 import com.example.stock_management_system.models.Category;
 import com.example.stock_management_system.models.Order;
 import com.example.stock_management_system.models.Product;
+import com.example.stock_management_system.models.StockMovement;
 import com.example.stock_management_system.models.Supplier;
 import com.example.stock_management_system.models.User;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,7 +23,8 @@ import java.util.TreeMap;
 
 /**
  * Single access point to the SQLite database. The schema is created and migrated once,
- * the first time {@link #getInstance()} is called.
+ * the first time {@link #getInstance()} is called (and again after a restore).
+ * Every stock change is written to {@code stock_movements} in the same transaction.
  */
 public final class DatabaseManager {
 
@@ -24,8 +32,14 @@ public final class DatabaseManager {
 
     private static final System.Logger LOG = System.getLogger(DatabaseManager.class.getName());
 
-    private static final String DB_URL = "jdbc:sqlite:" + System.getProperty(
-            "stock.db.path", System.getProperty("user.home") + "/products.db");
+    private static final Path DB_PATH = Path.of(System.getProperty(
+            "stock.db.path", System.getProperty("user.home") + "/products.db"));
+    private static final String DB_URL = "jdbc:sqlite:" + DB_PATH;
+
+    private static final String PRODUCT_SELECT = """
+            SELECT p.*, s.name AS supplier_name
+            FROM products p
+            LEFT JOIN suppliers s ON s.id = p.supplier_id""";
 
     private static final class Holder {
         private static final DatabaseManager INSTANCE = new DatabaseManager();
@@ -49,7 +63,7 @@ public final class DatabaseManager {
         initializeDatabase();
     }
 
-    private Connection connect() throws SQLException {
+    private static Connection connect() throws SQLException {
         return DriverManager.getConnection(DB_URL);
     }
 
@@ -62,7 +76,8 @@ public final class DatabaseManager {
                         category TEXT NOT NULL,
                         price REAL NOT NULL,
                         quantity INTEGER NOT NULL,
-                        reorder_level INTEGER NOT NULL DEFAULT 5
+                        reorder_level INTEGER NOT NULL DEFAULT 5,
+                        supplier_id INTEGER
                     )""");
             st.execute("""
                     CREATE TABLE IF NOT EXISTS orders (
@@ -92,17 +107,30 @@ public final class DatabaseManager {
                         name TEXT NOT NULL,
                         contact TEXT NOT NULL
                     )""");
+            st.execute("""
+                    CREATE TABLE IF NOT EXISTS stock_movements (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        product_id INTEGER,
+                        product_name TEXT NOT NULL,
+                        change INTEGER NOT NULL,
+                        quantity_after INTEGER NOT NULL,
+                        reason TEXT NOT NULL,
+                        note TEXT,
+                        username TEXT,
+                        created_at TEXT NOT NULL
+                    )""");
 
             // Migrations for databases created by older versions of the app
             addColumnIfMissing(conn, "orders", "order_date", "TEXT");
             addColumnIfMissing(conn, "products", "reorder_level",
                     "INTEGER NOT NULL DEFAULT " + DEFAULT_REORDER_LEVEL);
+            addColumnIfMissing(conn, "products", "supplier_id", "INTEGER");
         } catch (SQLException e) {
             LOG.log(System.Logger.Level.ERROR, "Could not initialise database", e);
         }
     }
 
-    private void addColumnIfMissing(Connection conn, String table, String column, String definition)
+    private static void addColumnIfMissing(Connection conn, String table, String column, String definition)
             throws SQLException {
         try (Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery("PRAGMA table_info(" + table + ")")) {
@@ -181,6 +209,36 @@ public final class DatabaseManager {
         }
     }
 
+    private static int lastInsertId(Connection conn) throws SQLException {
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery("SELECT last_insert_rowid()")) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
+    /** Looks up a product's id and quantity inside a transaction; returns null if it does not exist. */
+    private static int[] findStock(Connection conn, String column, Object value) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT id, quantity FROM products WHERE " + column + " = ?")) {
+            ps.setObject(1, value);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? new int[]{rs.getInt("id"), rs.getInt("quantity")} : null;
+            }
+        }
+    }
+
+    private static void recordMovement(Connection conn, int productId, String productName, int change,
+                                       int quantityAfter, StockMovement.Reason reason, String note)
+            throws SQLException {
+        User user = Session.getUser();
+        executeUpdate(conn, """
+                        INSERT INTO stock_movements
+                            (product_id, product_name, change, quantity_after, reason, note, username, created_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                productId, productName, change, quantityAfter, reason.name(), note,
+                user == null ? null : user.username(),
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString());
+    }
+
     private static Product mapProduct(ResultSet rs) throws SQLException {
         return new Product(
                 rs.getInt("id"),
@@ -188,7 +246,9 @@ public final class DatabaseManager {
                 rs.getString("category"),
                 rs.getDouble("price"),
                 rs.getInt("quantity"),
-                rs.getInt("reorder_level"));
+                rs.getInt("reorder_level"),
+                rs.getInt("supplier_id"),
+                rs.getString("supplier_name"));
     }
 
     private static Order mapOrder(ResultSet rs) throws SQLException {
@@ -201,34 +261,76 @@ public final class DatabaseManager {
                 date == null ? null : LocalDate.parse(date));
     }
 
+    /** Stores 0 (no supplier) as NULL. */
+    private static Integer supplierOrNull(int supplierId) {
+        return supplierId > 0 ? supplierId : null;
+    }
+
     // --------------------------------------------------------------- products
 
     public List<Product> getAllProducts() {
-        return query("SELECT * FROM products ORDER BY product_name COLLATE NOCASE",
-                DatabaseManager::mapProduct);
+        return query(PRODUCT_SELECT + " ORDER BY p.product_name COLLATE NOCASE", DatabaseManager::mapProduct);
     }
 
     public boolean addProduct(Product p) {
-        return update("""
-                        INSERT INTO products (product_name, category, price, quantity, reorder_level)
-                        VALUES (?, ?, ?, ?, ?)""",
-                p.productName(), p.category(), p.price(), p.quantity(), p.reorderLevel());
+        return inTransaction(conn -> {
+            executeUpdate(conn, """
+                            INSERT INTO products (product_name, category, price, quantity, reorder_level, supplier_id)
+                            VALUES (?, ?, ?, ?, ?, ?)""",
+                    p.productName(), p.category(), p.price(), p.quantity(), p.reorderLevel(),
+                    supplierOrNull(p.supplierId()));
+            recordMovement(conn, lastInsertId(conn), p.productName(), p.quantity(), p.quantity(),
+                    StockMovement.Reason.ADDED, null);
+            return true;
+        });
     }
 
+    /** Saves product details; a changed quantity is logged as a manual adjustment. */
     public boolean updateProduct(Product p) {
-        return update("""
-                        UPDATE products
-                        SET product_name = ?, category = ?, price = ?, quantity = ?, reorder_level = ?
-                        WHERE id = ?""",
-                p.productName(), p.category(), p.price(), p.quantity(), p.reorderLevel(), p.id());
+        return inTransaction(conn -> {
+            int[] before = findStock(conn, "id", p.id());
+            if (before == null) return false;
+            executeUpdate(conn, """
+                            UPDATE products
+                            SET product_name = ?, category = ?, price = ?, quantity = ?, reorder_level = ?,
+                                supplier_id = ?
+                            WHERE id = ?""",
+                    p.productName(), p.category(), p.price(), p.quantity(), p.reorderLevel(),
+                    supplierOrNull(p.supplierId()), p.id());
+            if (before[1] != p.quantity()) {
+                recordMovement(conn, p.id(), p.productName(), p.quantity() - before[1], p.quantity(),
+                        StockMovement.Reason.ADJUSTMENT, "Edited on the products page");
+            }
+            return true;
+        });
     }
 
-    public boolean restockProduct(int id, int amount) {
-        return update("UPDATE products SET quantity = quantity + ? WHERE id = ?", amount, id);
+    public boolean restockProduct(int id, int amount, String note) {
+        return inTransaction(conn -> {
+            int[] before = findStock(conn, "id", id);
+            if (before == null) return false;
+            executeUpdate(conn, "UPDATE products SET quantity = quantity + ? WHERE id = ?", amount, id);
+            String name = queryName(conn, id);
+            recordMovement(conn, id, name, amount, before[1] + amount, StockMovement.Reason.RESTOCK, note);
+            return true;
+        });
     }
 
-    public boolean deleteProduct(int id) {
-        return update("DELETE FROM products WHERE id = ?", id);
+    public boolean deleteProduct(Product p) {
+        return inTransaction(conn -> {
+            if (executeUpdate(conn, "DELETE FROM products WHERE id = ?", p.id()) != 1) return false;
+            recordMovement(conn, p.id(), p.productName(), -p.quantity(), 0, StockMovement.Reason.DELETED, null);
+            return true;
+        });
+    }
+
+    private static String queryName(Connection conn, int productId) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT product_name FROM products WHERE id = ?")) {
+            ps.setInt(1, productId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getString(1) : "";
+            }
+        }
     }
 
     // ------------------------------------------------------------- categories
@@ -270,21 +372,26 @@ public final class DatabaseManager {
     /** Records an order and deducts its quantity from stock; fails if stock is insufficient. */
     public boolean placeOrder(String productName, int orderQty) {
         return inTransaction(conn -> {
+            int productId;
+            int stock;
             double price;
             try (PreparedStatement ps = conn.prepareStatement(
-                    "SELECT quantity, price FROM products WHERE product_name = ?")) {
+                    "SELECT id, quantity, price FROM products WHERE product_name = ?")) {
                 ps.setString(1, productName);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next() || rs.getInt("quantity") < orderQty) return false;
+                    productId = rs.getInt("id");
+                    stock = rs.getInt("quantity");
                     price = rs.getDouble("price");
                 }
             }
-            executeUpdate(conn, "UPDATE products SET quantity = quantity - ? WHERE product_name = ?",
-                    orderQty, productName);
+            executeUpdate(conn, "UPDATE products SET quantity = quantity - ? WHERE id = ?", orderQty, productId);
             executeUpdate(conn, """
                             INSERT INTO orders (product_name, quantity, total_price, order_date)
                             VALUES (?, ?, ?, ?)""",
                     productName, orderQty, price * orderQty, LocalDate.now().toString());
+            recordMovement(conn, productId, productName, -orderQty, stock - orderQty,
+                    StockMovement.Reason.SALE, "Order #" + lastInsertId(conn));
             return true;
         });
     }
@@ -292,9 +399,15 @@ public final class DatabaseManager {
     /** Deletes an order and returns its quantity to stock (if the product still exists). */
     public boolean cancelOrder(Order order) {
         return inTransaction(conn -> {
-            executeUpdate(conn, "UPDATE products SET quantity = quantity + ? WHERE product_name = ?",
-                    order.quantity(), order.productName());
-            return executeUpdate(conn, "DELETE FROM orders WHERE id = ?", order.id()) == 1;
+            if (executeUpdate(conn, "DELETE FROM orders WHERE id = ?", order.id()) != 1) return false;
+            int[] before = findStock(conn, "product_name", order.productName());
+            if (before != null) {
+                executeUpdate(conn, "UPDATE products SET quantity = quantity + ? WHERE id = ?",
+                        order.quantity(), before[0]);
+                recordMovement(conn, before[0], order.productName(), order.quantity(),
+                        before[1] + order.quantity(), StockMovement.Reason.CANCELLED, "Order #" + order.id());
+            }
+            return true;
         });
     }
 
@@ -336,10 +449,33 @@ public final class DatabaseManager {
         return result;
     }
 
+    // -------------------------------------------------------- stock movements
+
+    public List<StockMovement> getStockMovements() {
+        return query("SELECT * FROM stock_movements ORDER BY id DESC",
+                rs -> new StockMovement(
+                        rs.getInt("id"),
+                        LocalDateTime.parse(rs.getString("created_at")),
+                        rs.getString("product_name"),
+                        rs.getInt("change"),
+                        rs.getInt("quantity_after"),
+                        StockMovement.Reason.valueOf(rs.getString("reason")),
+                        rs.getString("note"),
+                        rs.getString("username")));
+    }
+
     // ------------------------------------------------------------------ users
 
     public boolean hasUsers() {
         return queryOne("SELECT COUNT(*) FROM users", rs -> rs.getInt(1), 0) > 0;
+    }
+
+    public List<User> getAllUsers() {
+        return query("SELECT * FROM users ORDER BY username COLLATE NOCASE", DatabaseManager::mapUser);
+    }
+
+    public int countAdmins() {
+        return queryOne("SELECT COUNT(*) FROM users WHERE UPPER(role) = ?", rs -> rs.getInt(1), 0, User.ADMIN);
     }
 
     public boolean createUser(User user, String password) {
@@ -353,14 +489,19 @@ public final class DatabaseManager {
     }
 
     public User getUserByUsername(String username) {
-        return queryOne("SELECT * FROM users WHERE username = ?",
-                rs -> new User(rs.getString("username"), rs.getString("name"),
-                        rs.getString("email"), rs.getString("role")),
-                null, username);
+        return queryOne("SELECT * FROM users WHERE username = ?", DatabaseManager::mapUser, null, username);
+    }
+
+    private static User mapUser(ResultSet rs) throws SQLException {
+        return new User(rs.getString("username"), rs.getString("name"), rs.getString("email"), rs.getString("role"));
     }
 
     public boolean updateUserProfile(String username, String name, String email) {
         return update("UPDATE users SET name = ?, email = ? WHERE username = ?", name, email, username);
+    }
+
+    public boolean updateUserRole(String username, String role) {
+        return update("UPDATE users SET role = ? WHERE username = ?", role, username);
     }
 
     public boolean updatePassword(String username, String newPassword) {
@@ -368,11 +509,21 @@ public final class DatabaseManager {
                 PasswordUtil.hashPassword(newPassword), username);
     }
 
+    public boolean deleteUser(String username) {
+        return update("DELETE FROM users WHERE username = ?", username);
+    }
+
     // -------------------------------------------------------------- suppliers
 
     public List<Supplier> getAllSuppliers() {
-        return query("SELECT * FROM suppliers ORDER BY name COLLATE NOCASE",
-                rs -> new Supplier(rs.getInt("id"), rs.getString("name"), rs.getString("contact")));
+        return query("""
+                        SELECT s.id, s.name, s.contact, COUNT(p.id) AS product_count
+                        FROM suppliers s
+                        LEFT JOIN products p ON p.supplier_id = s.id
+                        GROUP BY s.id, s.name, s.contact
+                        ORDER BY s.name COLLATE NOCASE""",
+                rs -> new Supplier(rs.getInt("id"), rs.getString("name"), rs.getString("contact"),
+                        rs.getInt("product_count")));
     }
 
     public boolean addSupplier(String name, String contact) {
@@ -383,7 +534,47 @@ public final class DatabaseManager {
         return update("UPDATE suppliers SET name = ?, contact = ? WHERE id = ?", name, contact, id);
     }
 
+    /** Deletes a supplier and unlinks it from its products. */
     public boolean deleteSupplier(int id) {
-        return update("DELETE FROM suppliers WHERE id = ?", id);
+        return inTransaction(conn -> {
+            executeUpdate(conn, "UPDATE products SET supplier_id = NULL WHERE supplier_id = ?", id);
+            executeUpdate(conn, "DELETE FROM suppliers WHERE id = ?", id);
+            return true;
+        });
+    }
+
+    // -------------------------------------------------------- backup / restore
+
+    public Path getDatabasePath() {
+        return DB_PATH.toAbsolutePath();
+    }
+
+    /** Writes a consistent copy of the database to the target file (replacing it). */
+    public void backupTo(Path target) throws SQLException, IOException {
+        Files.deleteIfExists(target);
+        try (Connection conn = connect(); PreparedStatement ps = conn.prepareStatement("VACUUM INTO ?")) {
+            ps.setString(1, target.toAbsolutePath().toString());
+            ps.execute();
+        }
+    }
+
+    /**
+     * Replaces the current database with a backup, after checking that the backup is a
+     * database from this app. Older backups are migrated to the current schema.
+     */
+    public void restoreFrom(Path source) throws SQLException, IOException {
+        // Checked first: opening a missing path with SQLite would create an empty database there.
+        if (!Files.isRegularFile(source)) {
+            throw new IOException("Backup file not found: " + source);
+        }
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + source.toAbsolutePath());
+             Statement st = conn.createStatement()) {
+            st.executeQuery("SELECT COUNT(*) FROM products").close();
+            st.executeQuery("SELECT COUNT(*) FROM users").close();
+        } catch (SQLException e) {
+            throw new SQLException("This file is not a Stock Management System backup.", e);
+        }
+        Files.copy(source, DB_PATH, StandardCopyOption.REPLACE_EXISTING);
+        initializeDatabase();
     }
 }

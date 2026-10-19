@@ -79,7 +79,8 @@ public class DashboardController {
                 boolean out = p.status() == Product.Status.OUT_OF_STOCK;
                 setText(p.productName() + (out
                         ? "  -  out of stock"
-                        : "  -  " + p.quantity() + " left (reorder at " + p.reorderLevel() + ")"));
+                        : "  -  " + p.quantity() + " left (reorder at " + p.reorderLevel() + ")")
+                        + (p.supplierName() == null ? "" : "  •  " + p.supplierName()));
                 getStyleClass().addAll("alert-item", out ? "out-of-stock" : "low-stock");
             }
         });

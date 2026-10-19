@@ -53,4 +53,18 @@
             </HBox>
         </VBox>
     </HBox>
+
+    <VBox fx:id="dataCard" styleClass="card">
+        <Label styleClass="card-title" text="Backup and restore"/>
+        <Label styleClass="muted" wrapText="true"
+               text="Save a copy of all products, orders, suppliers, users and history, or replace the current data with a saved copy."/>
+        <Label fx:id="databasePathLabel" styleClass="muted" wrapText="true"/>
+        <HBox spacing="10">
+            <padding><Insets top="4"/></padding>
+            <Button onAction="#backupDatabase" styleClass="primary" text="Back up now...">
+                <graphic><Region styleClass="icon,small,icon-download"/></graphic>
+            </Button>
+            <Button onAction="#restoreDatabase" styleClass="danger" text="Restore from backup..."/>
+        </HBox>
+    </VBox>
 </VBox>

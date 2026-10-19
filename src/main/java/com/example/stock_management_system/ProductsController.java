@@ -2,6 +2,7 @@ package com.example.stock_management_system;
 
 import com.example.stock_management_system.models.Category;
 import com.example.stock_management_system.models.Product;
+import com.example.stock_management_system.models.Supplier;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,10 +17,12 @@ import java.util.Locale;
 public class ProductsController {
 
     private static final String ALL_CATEGORIES = "All categories";
+    private static final Supplier NO_SUPPLIER = new Supplier(0, "No supplier", "", 0);
 
     @FXML private Label formTitle;
     @FXML private TextField productNameField;
     @FXML private ComboBox<Category> categoryComboBox;
+    @FXML private ComboBox<Supplier> supplierComboBox;
     @FXML private TextField priceField;
     @FXML private TextField quantityField;
     @FXML private TextField reorderField;
@@ -36,6 +39,7 @@ public class ProductsController {
     @FXML private TableView<Product> productTable;
     @FXML private TableColumn<Product, String> productNameColumn;
     @FXML private TableColumn<Product, String> categoryColumn;
+    @FXML private TableColumn<Product, String> supplierColumn;
     @FXML private TableColumn<Product, Double> priceColumn;
     @FXML private TableColumn<Product, Integer> quantityColumn;
     @FXML private TableColumn<Product, Integer> reorderColumn;
@@ -50,6 +54,8 @@ public class ProductsController {
     public void initialize() {
         productNameColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().productName()));
         categoryColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().category()));
+        supplierColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(
+                c.getValue().supplierName() == null ? "-" : c.getValue().supplierName()));
         priceColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().price()));
         priceColumn.setCellFactory(Formats.cells(Formats::money));
         quantityColumn.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().quantity()));
@@ -69,6 +75,10 @@ public class ProductsController {
         categoryFilter.valueProperty().addListener((obs, o, n) -> applyFilter());
         lowStockOnly.selectedProperty().addListener((obs, o, n) -> applyFilter());
 
+        // Staff can edit and restock, but only admins can delete products.
+        deleteButton.setVisible(Session.isAdmin());
+        deleteButton.setManaged(Session.isAdmin());
+
         reload();
         showSelection(null);
     }
@@ -76,6 +86,10 @@ public class ProductsController {
     private void reload() {
         List<Category> categories = db.getAllCategories();
         categoryComboBox.setItems(FXCollections.observableArrayList(categories));
+        ObservableList<Supplier> suppliers = FXCollections.observableArrayList(NO_SUPPLIER);
+        suppliers.addAll(db.getAllSuppliers());
+        supplierComboBox.setItems(suppliers);
+        if (supplierComboBox.getValue() == null) supplierComboBox.setValue(NO_SUPPLIER);
 
         String currentFilter = categoryFilter.getValue();
         ObservableList<String> filterItems = FXCollections.observableArrayList(ALL_CATEGORIES);
@@ -118,6 +132,10 @@ public class ProductsController {
                 .filter(c -> c.name().equals(selected.category()))
                 .findFirst()
                 .ifPresentOrElse(categoryComboBox::setValue, () -> categoryComboBox.setValue(null));
+        supplierComboBox.setValue(supplierComboBox.getItems().stream()
+                .filter(s -> s.id() == selected.supplierId())
+                .findFirst()
+                .orElse(NO_SUPPLIER));
     }
 
     /** Validates the form; returns the product it describes (with the given id) or null. */
@@ -147,7 +165,9 @@ public class ProductsController {
             Dialogs.warn("Duplicate product", "A product called \"" + name + "\" already exists.");
             return null;
         }
-        return new Product(id, name, category.name(), price, quantity, reorder);
+        Supplier supplier = supplierComboBox.getValue();
+        return new Product(id, name, category.name(), price, quantity, reorder,
+                supplier == null ? 0 : supplier.id(), null);
     }
 
     @FXML
@@ -188,7 +208,7 @@ public class ProductsController {
                         Dialogs.warn("Invalid quantity", "Enter a whole number greater than 0.");
                         return;
                     }
-                    db.restockProduct(selected.id(), amount);
+                    db.restockProduct(selected.id(), amount, null);
                     reload();
                     selectById(selected.id());
                 });
@@ -199,10 +219,10 @@ public class ProductsController {
         Product selected = productTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
         if (!Dialogs.confirm("Delete product",
-                "Delete \"" + selected.productName() + "\"? Its order history is kept.")) {
+                "Delete \"" + selected.productName() + "\"? Its order and stock history are kept.")) {
             return;
         }
-        db.deleteProduct(selected.id());
+        db.deleteProduct(selected);
         clearForm();
         reload();
     }
@@ -215,6 +235,7 @@ public class ProductsController {
         quantityField.clear();
         reorderField.clear();
         categoryComboBox.setValue(null);
+        supplierComboBox.setValue(NO_SUPPLIER);
     }
 
     @FXML

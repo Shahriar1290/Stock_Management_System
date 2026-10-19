@@ -5,6 +5,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+
+import java.io.File;
+import java.time.LocalDate;
 
 public class ProfileController {
 
@@ -18,6 +23,9 @@ public class ProfileController {
     @FXML private PasswordField txtPassword;
     @FXML private PasswordField txtConfirmPassword;
 
+    @FXML private VBox dataCard;
+    @FXML private Label databasePathLabel;
+
     private final DatabaseManager db = DatabaseManager.getInstance();
 
     @FXML
@@ -25,6 +33,10 @@ public class ProfileController {
         passwordHint.setText("Enter your current password, then a new one of at least "
                 + PasswordUtil.MIN_LENGTH + " characters.");
         loadUserProfile();
+
+        dataCard.setVisible(Session.isAdmin());
+        dataCard.setManaged(Session.isAdmin());
+        databasePathLabel.setText("Database file: " + db.getDatabasePath());
     }
 
     private void loadUserProfile() {
@@ -86,5 +98,44 @@ public class ProfileController {
     @FXML
     private void cancelUpdate() {
         loadUserProfile();
+    }
+
+    private FileChooser backupChooser(String title) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(title);
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Database backups", "*.db"));
+        return chooser;
+    }
+
+    @FXML
+    private void backupDatabase() {
+        FileChooser chooser = backupChooser("Save backup");
+        chooser.setInitialFileName("stock-backup-" + LocalDate.now() + ".db");
+        File file = chooser.showSaveDialog(dataCard.getScene().getWindow());
+        if (file == null) return;
+        try {
+            db.backupTo(file.toPath());
+            Dialogs.info("Backup saved", "Your data was saved to\n" + file.getAbsolutePath());
+        } catch (Exception e) {
+            Dialogs.error("Backup failed", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void restoreDatabase() {
+        File file = backupChooser("Choose a backup to restore").showOpenDialog(dataCard.getScene().getWindow());
+        if (file == null) return;
+        if (!Dialogs.confirm("Restore backup", "Replace ALL current data with the backup \""
+                + file.getName() + "\"?\n\nAnything changed since that backup will be lost. "
+                + "Consider backing up first. You will be signed out afterwards.")) {
+            return;
+        }
+        try {
+            db.restoreFrom(file.toPath());
+            Dialogs.info("Backup restored", "Your data has been restored. Please sign in again.");
+            Navigator.showLogin();
+        } catch (Exception e) {
+            Dialogs.error("Restore failed", e.getMessage());
+        }
     }
 }

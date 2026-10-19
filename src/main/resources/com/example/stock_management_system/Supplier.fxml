@@ -58,6 +58,7 @@
             <TableColumn fx:id="colSupplierId" text="ID" prefWidth="80"/>
             <TableColumn fx:id="colSupplierName" text="Name" prefWidth="320"/>
             <TableColumn fx:id="colSupplierContact" text="Contact" prefWidth="320"/>
+            <TableColumn fx:id="colSupplierProducts" text="Products" prefWidth="120" styleClass="numeric"/>
         </columns>
     </TableView>
 </VBox>

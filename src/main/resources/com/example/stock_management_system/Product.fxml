@@ -29,15 +29,19 @@
                 <Label styleClass="field-label" text="CATEGORY"/>
                 <ComboBox fx:id="categoryComboBox" maxWidth="Infinity" promptText="Select category"/>
             </VBox>
-            <VBox spacing="6" prefWidth="130">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label styleClass="field-label" text="SUPPLIER"/>
+                <ComboBox fx:id="supplierComboBox" maxWidth="Infinity"/>
+            </VBox>
+            <VBox spacing="6" prefWidth="120">
                 <Label styleClass="field-label" text="PRICE"/>
                 <TextField fx:id="priceField" promptText="0.00"/>
             </VBox>
-            <VBox spacing="6" prefWidth="110">
+            <VBox spacing="6" prefWidth="100">
                 <Label styleClass="field-label" text="QUANTITY"/>
                 <TextField fx:id="quantityField" promptText="0"/>
             </VBox>
-            <VBox spacing="6" prefWidth="120">
+            <VBox spacing="6" prefWidth="105">
                 <Label styleClass="field-label" text="REORDER AT"/>
                 <TextField fx:id="reorderField" promptText="5"/>
             </VBox>
@@ -71,7 +75,8 @@
         <placeholder><Label styleClass="muted" text="No products match your filters."/></placeholder>
         <columns>
             <TableColumn fx:id="productNameColumn" text="Product" prefWidth="220"/>
-            <TableColumn fx:id="categoryColumn" text="Category" prefWidth="150"/>
+            <TableColumn fx:id="categoryColumn" text="Category" prefWidth="130"/>
+            <TableColumn fx:id="supplierColumn" text="Supplier" prefWidth="140"/>
             <TableColumn fx:id="priceColumn" text="Price" prefWidth="100" styleClass="numeric"/>
             <TableColumn fx:id="quantityColumn" text="Qty" prefWidth="80" styleClass="numeric"/>
             <TableColumn fx:id="reorderColumn" text="Reorder at" prefWidth="90" styleClass="numeric"/>

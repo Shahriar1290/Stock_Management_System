@@ -43,6 +43,9 @@ public class CategoriesController {
         deleteButton.disableProperty().bind(noSelection);
 
         searchField.textProperty().addListener((obs, o, n) -> applyFilter());
+        // Only admins can delete records.
+        deleteButton.setVisible(Session.isAdmin());
+        deleteButton.setManaged(Session.isAdmin());
         loadCategories();
     }
 

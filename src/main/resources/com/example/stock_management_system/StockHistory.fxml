@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox styleClass="page" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.stock_management_system.StockHistoryController">
+
+    <HBox styleClass="page-header">
+        <VBox>
+            <Label styleClass="page-heading" text="Stock History"/>
+            <Label styleClass="page-subtitle" text="Every change to stock levels: new products, restocks, sales, cancellations, edits and deletions."/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="summaryLabel" styleClass="summary-label"/>
+        <Button onAction="#exportCsv" text="Export CSV">
+            <graphic><Region styleClass="icon,small,icon-download"/></graphic>
+        </Button>
+    </HBox>
+
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <StackPane styleClass="search-box" alignment="CENTER_LEFT" prefWidth="260" HBox.hgrow="SOMETIMES">
+            <TextField fx:id="searchField" styleClass="search-field" promptText="Search product, user, note"/>
+            <Region styleClass="icon,small,icon-search" mouseTransparent="true">
+                <StackPane.margin><Insets left="11"/></StackPane.margin>
+            </Region>
+        </StackPane>
+        <ComboBox fx:id="reasonFilter" prefWidth="170"/>
+        <Label styleClass="muted" text="From" minWidth="-Infinity"/>
+        <DatePicker fx:id="fromDate" prefWidth="140" minWidth="120" promptText="Any"/>
+        <Label styleClass="muted" text="To" minWidth="-Infinity"/>
+        <DatePicker fx:id="toDate" prefWidth="140" minWidth="120" promptText="Any"/>
+        <Button onAction="#clearFilters" styleClass="ghost" text="Reset" minWidth="-Infinity"/>
+    </HBox>
+
+    <TableView fx:id="historyTable" VBox.vgrow="ALWAYS">
+        <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/></columnResizePolicy>
+        <placeholder><Label styleClass="muted" text="No stock changes recorded yet."/></placeholder>
+        <columns>
+            <TableColumn fx:id="timeColumn" text="Time" prefWidth="150"/>
+            <TableColumn fx:id="productColumn" text="Product" prefWidth="200"/>
+            <TableColumn fx:id="changeColumn" text="Change" prefWidth="90" styleClass="numeric"/>
+            <TableColumn fx:id="afterColumn" text="Stock after" prefWidth="100" styleClass="numeric"/>
+            <TableColumn fx:id="reasonColumn" text="Activity" prefWidth="150"/>
+            <TableColumn fx:id="userColumn" text="User" prefWidth="110"/>
+            <TableColumn fx:id="noteColumn" text="Note" prefWidth="180"/>
+        </columns>
+    </TableView>
+</VBox>

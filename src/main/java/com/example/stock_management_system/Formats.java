@@ -5,6 +5,7 @@ import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
@@ -12,6 +13,7 @@ import java.util.function.Function;
 public final class Formats {
 
     private static final DateTimeFormatter DATE = DateTimeFormatter.ofPattern("dd MMM yyyy");
+    private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm");
 
     private Formats() {
     }
@@ -26,6 +28,10 @@ public final class Formats {
 
     public static String date(LocalDate date) {
         return date == null ? "-" : DATE.format(date);
+    }
+
+    public static String dateTime(LocalDateTime time) {
+        return time == null ? "-" : DATE_TIME.format(time);
     }
 
     /** A cell factory that renders values with the given formatter. */

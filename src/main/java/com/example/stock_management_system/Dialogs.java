@@ -2,7 +2,11 @@ package com.example.stock_management_system;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.VBox;
 
 import java.util.Optional;
 
@@ -36,6 +40,19 @@ public final class Dialogs {
         dialog.setContentText(message);
         Navigator.applyTheme(dialog.getDialogPane());
         return dialog.showAndWait().map(String::trim).filter(s -> !s.isEmpty());
+    }
+
+    /** Asks for a password with masked input; returns empty if cancelled or left blank. */
+    public static Optional<String> promptPassword(String title, String message) {
+        PasswordField field = new PasswordField();
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.getDialogPane().setContent(new VBox(8, new Label(message), field));
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.setResultConverter(button -> button == ButtonType.OK ? field.getText() : null);
+        dialog.setOnShown(e -> field.requestFocus());
+        Navigator.applyTheme(dialog.getDialogPane());
+        return dialog.showAndWait().filter(s -> !s.isEmpty());
     }
 
     private static void show(Alert.AlertType type, String title, String message) {

@@ -42,11 +42,19 @@
                           text="Suppliers" maxWidth="Infinity">
                 <graphic><Region styleClass="icon,icon-truck"/></graphic>
             </ToggleButton>
+            <ToggleButton fx:id="historyNav" onAction="#openHistory" styleClass="nav-button"
+                          text="Stock History" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-history"/></graphic>
+            </ToggleButton>
 
             <Label styleClass="nav-section" text="ACCOUNT"/>
             <ToggleButton fx:id="profileNav" onAction="#openProfile" styleClass="nav-button"
                           text="My Profile" maxWidth="Infinity">
                 <graphic><Region styleClass="icon,icon-user"/></graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="usersNav" onAction="#openUsers" styleClass="nav-button"
+                          text="Users" maxWidth="Infinity">
+                <graphic><Region styleClass="icon,icon-users"/></graphic>
             </ToggleButton>
 
             <Region VBox.vgrow="ALWAYS"/>

@@ -26,6 +26,7 @@ public class SupplierController {
     @FXML private TableColumn<Supplier, Integer> colSupplierId;
     @FXML private TableColumn<Supplier, String> colSupplierName;
     @FXML private TableColumn<Supplier, String> colSupplierContact;
+    @FXML private TableColumn<Supplier, Integer> colSupplierProducts;
 
     private final DatabaseManager db = DatabaseManager.getInstance();
     private final ObservableList<Supplier> suppliers = FXCollections.observableArrayList();
@@ -36,6 +37,7 @@ public class SupplierController {
         colSupplierId.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().id()));
         colSupplierName.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().name()));
         colSupplierContact.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().contact()));
+        colSupplierProducts.setCellValueFactory(c -> new ReadOnlyObjectWrapper<>(c.getValue().productCount()));
 
         SortedList<Supplier> sorted = new SortedList<>(filtered);
         sorted.comparatorProperty().bind(tableSuppliers.comparatorProperty());
@@ -44,6 +46,9 @@ public class SupplierController {
                 .addListener((obs, old, selected) -> showSelection(selected));
 
         searchField.textProperty().addListener((obs, o, n) -> applyFilter());
+        // Only admins can delete records.
+        deleteButton.setVisible(Session.isAdmin());
+        deleteButton.setManaged(Session.isAdmin());
         loadSuppliers();
         showSelection(null);
     }
@@ -102,7 +107,9 @@ public class SupplierController {
     private void deleteSupplier() {
         Supplier selected = tableSuppliers.getSelectionModel().getSelectedItem();
         if (selected == null) return;
-        if (Dialogs.confirm("Delete supplier", "Delete the supplier \"" + selected.name() + "\"?")) {
+        String linked = selected.productCount() == 0 ? ""
+                : "\n\n" + selected.productCount() + " product(s) will no longer have a supplier.";
+        if (Dialogs.confirm("Delete supplier", "Delete the supplier \"" + selected.name() + "\"?" + linked)) {
             db.deleteSupplier(selected.id());
             clearFields();
             loadSuppliers();
