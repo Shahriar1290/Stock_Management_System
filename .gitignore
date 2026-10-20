@@ -37,3 +37,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+### Launch video build files ###
+brag-output/

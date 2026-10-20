@@ -2,7 +2,11 @@
 
 A desktop inventory manager built with **JavaFX** and **SQLite**. Track products, categories, suppliers and orders. See sales and revenue on a live dashboard, get low-stock alerts, and keep a full history of every stock change. Your data stays on your own computer in a single database file.
 
-![Dashboard (light mode)](docs/screenshots/dashboard-light.png)
+### ▶ Watch the 20-second demo
+
+[![Stock Manager demo video: click to play](docs/demo/poster.jpg)](docs/demo/stock-manager-demo.mp4)
+
+*Click the image to play the video (1080p, with sound).*
 
 ---
 
@@ -78,9 +82,13 @@ A desktop inventory manager built with **JavaFX** and **SQLite**. Track products
 
 ## Screenshots
 
-| Sign in | Dashboard (dark) |
+| Dashboard (light) | Dashboard (dark) |
 |---|---|
-| ![Sign in](docs/screenshots/login.png) | ![Dashboard dark](docs/screenshots/dashboard-dark.png) |
+| ![Dashboard light](docs/screenshots/dashboard-light.png) | ![Dashboard dark](docs/screenshots/dashboard-dark.png) |
+
+**Sign in**
+
+![Sign in](docs/screenshots/login.png)
 
 | Products | Orders |
 |---|---|
